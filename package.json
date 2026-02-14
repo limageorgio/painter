@@ -1,0 +1,22 @@
+{
+  "name": "pintura-profissional",
+  "version": "1.0.0",
+  "description": "Site profissional de serviços de pintura residencial e comercial",
+  "main": "index.html",
+  "scripts": {
+    "dev": "http-server -p 8080 -c-1",
+    "start": "http-server -p 8080",
+    "preview": "http-server -p 3000"
+  },
+  "keywords": [
+    "pintura",
+    "profissional",
+    "residencial",
+    "comercial"
+  ],
+  "author": "Pintura Profissional",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

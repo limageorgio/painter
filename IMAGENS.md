@@ -1,53 +1,99 @@
 # Guia de Imagens - Pintura Profissional
 
-## Estrutura de Pastas Recomendada
+## Estrutura de Pastas Atual
 
 ```
 painter/
-├── images/
-│   ├── projects/           # Fotos dos projetos
-│   │   ├── projeto-1.jpg
-│   │   ├── projeto-2.jpg
-│   │   └── projeto-3.jpg
-│   ├── team/               # Fotos da equipe (opcional)
-│   │   ├── chefe.jpg
-│   │   └── pintor.jpg
-│   ├── gallery/            # Galeria de trabalhos
-│   │   └── ...
-│   ├── bg/                 # Imagens de fundo (opcional)
-│   │   └── ...
-│   └── logo.png           # Logo da empresa
+├── images/                  # Pasta com todas as imagens do site
+│   ├── hero-painter.jpg              # Imagem hero (800x600px)
+│   ├── portfolio-sala-modern.jpg     # Sala renovada (600x400px)
+│   ├── portfolio-fachada.jpg         # Fachada pintada (600x400px)
+│   ├── portfolio-quarto.jpg          # Quarto decorado (600x400px)
+│   ├── about-pintor.jpg              # Pintor profissional (600x600px)
+│   └── README.md                     # Documentação das imagens
 ├── index.html
 ├── styles.css
-└── script.js
+├── script.js
+└── config.js
 ```
 
-## Dimensões Recomendadas para Imagens
+## Imagens Utilizadas no Site
 
-### Imagens dos Projetos (Portfolio)
-- **Dimensões**: 800x600px ou 1200x800px
-- **Formato**: JPG ou WebP (para melhor compressão)
-- **Peso**: Máximo 200KB por imagem
-- **Proporção**: 4:3 ou 3:2 (paisagem)
+### 1. Hero Section - hero-painter.jpg
+- **Localização:** `images/hero-painter.jpg`
+- **Dimensões:** 800x600px
+- **Descrição:** Pintor profissional aplicando tinta em parede com rolo
+- **Tema:** Pintura interna profissional em residência
+- **URL Unsplash:** https://images.unsplash.com/photo-1589939705066-5a101c481b47
 
-### Logo da Empresa
-- **Dimensões**: 200x80px (cabeçalho) / 300x120px (footer)
-- **Formato**: PNG com fundo transparente
-- **Peso**: Máximo 50KB
+### 2. Portfolio 1 - portfolio-sala-modern.jpg
+- **Localização:** `images/portfolio-sala-modern.jpg`
+- **Dimensões:** 600x400px
+- **Descrição:** Sala de estar renovada com paredes pintadas em tons claros
+- **Tema:** Casa Sobrados - Pintura Residencial Completa
+- **URL Unsplash:** https://images.unsplash.com/photo-1581684900099-5492f59df025
 
-### Imagens do Sobre
-- **Dimensões**: 600x600px (quadrada) ou 800x800px
-- **Formato**: JPG
-- **Peso**: Máximo 150KB
+### 3. Portfolio 2 - portfolio-fachada.jpg
+- **Localização:** `images/portfolio-fachada.jpg`
+- **Dimensões:** 600x400px
+- **Descrição:** Fachada de residência pintada profissionalmente com acabamento impecável
+- **Tema:** Fachada Comercial - Pintura de Fachada
+- **URL Unsplash:** https://images.unsplash.com/photo-1566073771259-6a8506099945
 
-### Avatares dos Depoimentos
-- **Dimensões**: 150x150px
-- **Formato**: JPG ou PNG
-- **Peso**: Máximo 30KB
+### 4. Portfolio 3 - portfolio-quarto.jpg
+- **Localização:** `images/portfolio-quarto.jpg`
+- **Dimensões:** 600x400px
+- **Descrição:** Quarto moderno com parede pintada em cor sofisticada
+- **Tema:** Apto com Efeitos Especiais - Pintura Decorativa
+- **URL Unsplash:** https://images.unsplash.com/photo-1556731617-7f42eaf58e2d
 
-## Como Substituir as Imagens Placeholder
+### 5. About Section - about-pintor.jpg
+- **Localização:** `images/about-pintor.jpg`
+- **Dimensões:** 600x600px
+- **Descrição:** Pintor profissional aplicando tinta em parede com precisão e qualidade
+- **Tema:** Sobre - Mostra profissionalismo da equipe
+- **URL Unsplash:** https://images.unsplash.com/photo-1599027945480-8d8f18fdf6b3
 
-1. **Crie uma pasta `images`** no mesmo nível de `index.html`
+## Como Baixar as Imagens
+
+### Opção 1: Download Manual via Navegador
+1. Copie a URL Unsplash correspondente (listada acima)
+2. Cole no navegador
+3. Clique em "Download" ou pressione Ctrl+S
+4. Salve na pasta `images/` com o nome exato especificado
+
+### Opção 2: Download via PowerShell (Windows)
+Abra o PowerShell na pasta raiz do projeto (`e:\apps\painter`) e execute:
+
+```powershell
+# Hero Image
+(New-Object Net.WebClient).DownloadFile('https://images.unsplash.com/photo-1589939705066-5a101c481b47?w=800&h=600&fit=crop', './images/hero-painter.jpg')
+
+# Portfolio Sala Moderna
+(New-Object Net.WebClient).DownloadFile('https://images.unsplash.com/photo-1581684900099-5492f59df025?w=600&h=400&fit=crop', './images/portfolio-sala-modern.jpg')
+
+# Portfolio Fachada
+(New-Object Net.WebClient).DownloadFile('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=400&fit=crop', './images/portfolio-fachada.jpg')
+
+# Portfolio Quarto
+(New-Object Net.WebClient).DownloadFile('https://images.unsplash.com/photo-1556731617-7f42eaf58e2d?w=600&h=400&fit=crop', './images/portfolio-quarto.jpg')
+
+# About Pintor
+(New-Object Net.WebClient).DownloadFile('https://images.unsplash.com/photo-1599027945480-8d8f18fdf6b3?w=600&h=600&fit=crop', './images/about-pintor.jpg')
+```
+
+### Opção 3: Download via PowerShell (MacOS/Linux)
+Use curl para fazer o download das imagens:
+
+```bash
+curl -o ./images/hero-painter.jpg https://images.unsplash.com/photo-1589939705066-5a101c481b47?w=800&h=600&fit=crop
+curl -o ./images/portfolio-sala-modern.jpg https://images.unsplash.com/photo-1581684900099-5492f59df025?w=600&h=400&fit=crop
+curl -o ./images/portfolio-fachada.jpg https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=400&fit=crop
+curl -o ./images/portfolio-quarto.jpg https://images.unsplash.com/photo-1556731617-7f42eaf58e2d?w=600&h=400&fit=crop
+curl -o ./images/about-pintor.jpg https://images.unsplash.com/photo-1599027945480-8d8f18fdf6b3?w=600&h=600&fit=crop
+```
+
+## Referências Atuais no HTML
 
 2. **Adicione suas imagens** na pasta correspondente
 
