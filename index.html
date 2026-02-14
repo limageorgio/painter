@@ -1088,6 +1088,230 @@
                 </div>
             </div>
 
+            <section id="simulador" class="color-simulator">
+                <div class="section-title-wrapper">
+                    <i class="logo-decoration fas fa-eye-dropper"></i>
+                    <h2>Simulador de Piso, Parede e Teto</h2>
+                </div>
+                <p class="section-subtitle">Teste combinacoes reais com base nas paletas e visualize o ambiente em segundos</p>
+
+                <div class="simulator-layout">
+                    <div class="simulator-controls">
+                        <div class="control-group" data-group="A">
+                            <h4>Combinacao A</h4>
+                            <label for="paletteSelectA">Paleta</label>
+                            <select id="paletteSelectA" class="simulator-select"></select>
+
+                            <label for="roomPresetA">Ambiente</label>
+                            <select id="roomPresetA" class="simulator-select">
+                                <option value="sala">Sala de Estar</option>
+                                <option value="quarto">Quarto</option>
+                                <option value="cozinha">Cozinha / Gourmet</option>
+                                <option value="corredor">Corredor / Hall</option>
+                                <option value="fachada">Fachada</option>
+                            </select>
+
+                            <label for="floorTypeA">Tipo de piso</label>
+                            <select id="floorTypeA" class="simulator-select" data-group="A">
+                                <option value="claro">Piso Claro</option>
+                                <option value="medio">Piso Medio</option>
+                                <option value="escuro">Piso Escuro</option>
+                                <option value="cinza">Piso Cinza</option>
+                                <option value="madeira-clara">Madeira Clara</option>
+                                <option value="madeira-media">Madeira Media</option>
+                                <option value="madeira-escura">Madeira Escura</option>
+                                <option value="carvalho">Carvalho</option>
+                                <option value="nogueira">Nogueira</option>
+                                <option value="concreto-claro">Concreto Claro</option>
+                                <option value="concreto-escuro">Concreto Escuro</option>
+                                <option value="cimento-queimado">Cimento Queimado</option>
+                                <option value="marmore-claro">Marmore Claro</option>
+                                <option value="pedra-clara">Pedra Clara</option>
+                                <option value="pedra-escura">Pedra Escura</option>
+                                <option value="porcelanato-acetinado">Porcelanato Acetinado</option>
+                            </select>
+
+                            <div class="tone-mapping">
+                                <div class="tone-row">
+                                    <span>Piso</span>
+                                    <select class="tone-select" data-target="floor" data-group="A">
+                                        <option value="1">Tom 1</option>
+                                        <option value="2">Tom 2</option>
+                                        <option value="3">Tom 3</option>
+                                    </select>
+                                </div>
+                                <div class="custom-floor">
+                                    <label class="custom-floor-toggle">
+                                        <input type="checkbox" class="custom-floor-check" data-group="A">
+                                        Usar piso personalizado
+                                    </label>
+                                    <input type="color" class="custom-floor-input" data-group="A" value="#cbbba5" aria-label="Cor do piso personalizada">
+                                </div>
+                                <div class="tone-row">
+                                    <span>Parede</span>
+                                    <select class="tone-select" data-target="wall" data-group="A">
+                                        <option value="1">Tom 1</option>
+                                        <option value="2" selected>Tom 2</option>
+                                        <option value="3">Tom 3</option>
+                                    </select>
+                                </div>
+                                <div class="tone-row">
+                                    <span>Teto</span>
+                                    <select class="tone-select" data-target="ceiling" data-group="A">
+                                        <option value="1" selected>Tom 1</option>
+                                        <option value="2">Tom 2</option>
+                                        <option value="3">Tom 3</option>
+                                    </select>
+                                </div>
+                                <div class="tone-row">
+                                    <span>Destaque</span>
+                                    <select class="tone-select" data-target="accent" data-group="A">
+                                        <option value="1">Tom 1</option>
+                                        <option value="2">Tom 2</option>
+                                        <option value="3" selected>Tom 3</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="control-actions">
+                                <button type="button" class="simulator-btn" data-action="swap" data-group="A">Inverter tons</button>
+                                <button type="button" class="simulator-btn" data-action="reset" data-group="A">Resetar</button>
+                            </div>
+
+                            <div class="favorites-actions">
+                                <button type="button" class="simulator-btn" data-action="save" data-group="A">Salvar favorito</button>
+                            </div>
+                        </div>
+
+                        <div class="control-group is-hidden" data-group="B" id="compareControls">
+                            <h4>Combinacao B</h4>
+                            <label for="paletteSelectB">Paleta</label>
+                            <select id="paletteSelectB" class="simulator-select"></select>
+
+                            <label for="roomPresetB">Ambiente</label>
+                            <select id="roomPresetB" class="simulator-select">
+                                <option value="sala">Sala de Estar</option>
+                                <option value="quarto">Quarto</option>
+                                <option value="cozinha">Cozinha / Gourmet</option>
+                                <option value="corredor">Corredor / Hall</option>
+                                <option value="fachada">Fachada</option>
+                            </select>
+
+                            <label for="floorTypeB">Tipo de piso</label>
+                            <select id="floorTypeB" class="simulator-select" data-group="B">
+                                <option value="claro">Piso Claro</option>
+                                <option value="medio">Piso Medio</option>
+                                <option value="escuro">Piso Escuro</option>
+                                <option value="cinza">Piso Cinza</option>
+                                <option value="madeira-clara">Madeira Clara</option>
+                                <option value="madeira-media">Madeira Media</option>
+                                <option value="madeira-escura">Madeira Escura</option>
+                                <option value="carvalho">Carvalho</option>
+                                <option value="nogueira">Nogueira</option>
+                                <option value="concreto-claro">Concreto Claro</option>
+                                <option value="concreto-escuro">Concreto Escuro</option>
+                                <option value="cimento-queimado">Cimento Queimado</option>
+                                <option value="marmore-claro">Marmore Claro</option>
+                                <option value="pedra-clara">Pedra Clara</option>
+                                <option value="pedra-escura">Pedra Escura</option>
+                                <option value="porcelanato-acetinado">Porcelanato Acetinado</option>
+                            </select>
+
+                            <div class="tone-mapping">
+                                <div class="tone-row">
+                                    <span>Piso</span>
+                                    <select class="tone-select" data-target="floor" data-group="B">
+                                        <option value="1">Tom 1</option>
+                                        <option value="2">Tom 2</option>
+                                        <option value="3">Tom 3</option>
+                                    </select>
+                                </div>
+                                <div class="custom-floor">
+                                    <label class="custom-floor-toggle">
+                                        <input type="checkbox" class="custom-floor-check" data-group="B">
+                                        Usar piso personalizado
+                                    </label>
+                                    <input type="color" class="custom-floor-input" data-group="B" value="#b59e87" aria-label="Cor do piso personalizada">
+                                </div>
+                                <div class="tone-row">
+                                    <span>Parede</span>
+                                    <select class="tone-select" data-target="wall" data-group="B">
+                                        <option value="1">Tom 1</option>
+                                        <option value="2" selected>Tom 2</option>
+                                        <option value="3">Tom 3</option>
+                                    </select>
+                                </div>
+                                <div class="tone-row">
+                                    <span>Teto</span>
+                                    <select class="tone-select" data-target="ceiling" data-group="B">
+                                        <option value="1" selected>Tom 1</option>
+                                        <option value="2">Tom 2</option>
+                                        <option value="3">Tom 3</option>
+                                    </select>
+                                </div>
+                                <div class="tone-row">
+                                    <span>Destaque</span>
+                                    <select class="tone-select" data-target="accent" data-group="B">
+                                        <option value="1">Tom 1</option>
+                                        <option value="2">Tom 2</option>
+                                        <option value="3" selected>Tom 3</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="control-actions">
+                                <button type="button" class="simulator-btn" data-action="swap" data-group="B">Inverter tons</button>
+                                <button type="button" class="simulator-btn" data-action="reset" data-group="B">Resetar</button>
+                            </div>
+
+                            <div class="favorites-actions">
+                                <button type="button" class="simulator-btn" data-action="save" data-group="B">Salvar favorito</button>
+                            </div>
+                        </div>
+
+                        <label class="compare-toggle">
+                            <input type="checkbox" id="compareToggle">
+                            Comparar duas combinacoes
+                        </label>
+
+                        <div class="favorites-panel">
+                            <h4>Favoritos do Cliente</h4>
+                            <div class="favorites-list" id="favoritesList"></div>
+                        </div>
+                    </div>
+
+                    <div class="simulator-previews">
+                        <div class="simulator-card" data-preview="A">
+                            <div class="simulator-header">
+                                <h4>Visualizacao A</h4>
+                                <button type="button" class="simulator-download" data-download="A">Baixar imagem</button>
+                                <span class="contrast-status" data-contrast="A">Contraste: --</span>
+                            </div>
+                            <div class="room-preview" data-preview="A">
+                                <div class="room-ceiling" data-part="ceiling"></div>
+                                <div class="room-wall" data-part="wall"></div>
+                                <div class="room-accent" data-part="accent"></div>
+                                <div class="room-floor" data-part="floor"></div>
+                            </div>
+                        </div>
+
+                        <div class="simulator-card is-hidden" data-preview="B" id="comparePreview">
+                            <div class="simulator-header">
+                                <h4>Visualizacao B</h4>
+                                <button type="button" class="simulator-download" data-download="B">Baixar imagem</button>
+                                <span class="contrast-status" data-contrast="B">Contraste: --</span>
+                            </div>
+                            <div class="room-preview" data-preview="B">
+                                <div class="room-ceiling" data-part="ceiling"></div>
+                                <div class="room-wall" data-part="wall"></div>
+                                <div class="room-accent" data-part="accent"></div>
+                                <div class="room-floor" data-part="floor"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <div class="palettes-cta">
                 <p>Gostou de alguma paleta? Solicite um orçamento personalizado para sua residência!</p>
                 <a href="https://api.whatsapp.com/send?phone=5511999999999&text=Gostaria%20de%20um%20orçamento%20com%20a%20paleta%20de%20cores%20escolhida!" class="btn btn-primary" onclick="trackEvent('whatsapp_paleta')">
