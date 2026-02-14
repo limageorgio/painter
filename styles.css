@@ -217,7 +217,7 @@ body.dark-mode .dark-mode-toggle i::before {
 }
 
 body.dark-mode .hero {
-    background: linear-gradient(135deg, #1a2332 0%, #2d3748 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--card-bg) 100%);
 }
 
 .hero .container {
@@ -497,7 +497,7 @@ body.dark-mode .hero {
 }
 
 body.dark-mode .methodology {
-    background: linear-gradient(135deg, #1a2332 0%, #2d3748 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--card-bg) 100%);
 }
 
 .methodology-grid {
@@ -630,6 +630,10 @@ body.dark-mode .methodology {
 .about {
     padding: 80px 0;
     background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+}
+
+body.dark-mode .about {
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--card-bg) 100%);
 }
 
 .about-content {
@@ -795,7 +799,7 @@ body.dark-mode .methodology {
 /* ============ FAQ SECTION ============ */
 .faq {
     padding: 80px 0;
-    background: linear-gradient(135deg, var(--light-bg) 0%, var(--light-gray) 100%);
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--card-bg) var(--light-gray) 100%);
 }
 
 body.dark-mode .faq {
@@ -982,7 +986,7 @@ body.dark-mode .faq {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--secondary-text);
     opacity: 0;
     transition: var(--transition);
     pointer-events: none;
@@ -1091,7 +1095,7 @@ body.dark-mode .faq {
 .social-links a {
     width: 40px;
     height: 40px;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--card-border);
     border-radius: 50%;
     display: flex;
     align-items: center;
