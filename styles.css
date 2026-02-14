@@ -417,6 +417,23 @@ body.dark-mode .hero {
     background: var(--white);
 }
 
+body.dark-mode .services {
+    background: var(--bg-color);
+}
+
+.authority,
+.client-guide,
+.coverage {
+    padding: 80px 0;
+    background: var(--white);
+}
+
+body.dark-mode .authority,
+body.dark-mode .client-guide,
+body.dark-mode .coverage {
+    background: var(--bg-color);
+}
+
 .services h2,
 .portfolio h2,
 .methodology h2,
@@ -434,6 +451,11 @@ body.dark-mode .hero {
     opacity: 0.8;
     font-size: 1.1rem;
     margin-bottom: 3rem;
+}
+
+body.dark-mode .section-subtitle {
+    color: var(--secondary-text);
+    opacity: 1;
 }
 
 .services-grid {
@@ -550,6 +572,10 @@ body.dark-mode .methodology {
 .portfolio {
     padding: 80px 0;
     background: var(--white);
+}
+
+body.dark-mode .portfolio {
+    background: var(--bg-color);
 }
 
 .portfolio-grid {
@@ -712,6 +738,43 @@ body.dark-mode .about {
 .testimonials {
     padding: 80px 0;
     background: var(--white);
+}
+
+.coverage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+.coverage-item {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.coverage-item:hover {
+    transform: translateY(-6px);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 18px rgba(0, 102, 204, 0.35), var(--shadow-lg);
+}
+
+.coverage-item h3 {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.coverage-item p {
+    color: var(--text-color);
+    opacity: 0.85;
+    line-height: 1.6;
+}
+
+body.dark-mode .testimonials {
+    background: var(--bg-color);
 }
 
 .testimonials-grid {
@@ -1197,7 +1260,8 @@ body.dark-mode .faq {
     .methodology-grid,
     .testimonials-grid,
     .palettes-grid,
-    .cards-grid {
+    .cards-grid,
+    .coverage-grid {
         grid-template-columns: 1fr;
     }
 
