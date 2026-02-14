@@ -34,6 +34,34 @@ faqItems.forEach(item => {
     });
 });
 
+// Palettes Accordion
+const paletteToggles = document.querySelectorAll('.palette-accordion-toggle');
+paletteToggles.forEach((toggle, index) => {
+    const panel = toggle.nextElementSibling;
+    if (panel && panel.classList.contains('palette-accordion-panel')) {
+        panel.hidden = index !== 0;
+        toggle.setAttribute('aria-expanded', index === 0 ? 'true' : 'false');
+    }
+
+    toggle.addEventListener('click', () => {
+        paletteToggles.forEach(otherToggle => {
+            if (otherToggle !== toggle) {
+                otherToggle.setAttribute('aria-expanded', 'false');
+                const otherPanel = otherToggle.nextElementSibling;
+                if (otherPanel) {
+                    otherPanel.hidden = true;
+                }
+            }
+        });
+
+        const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!isExpanded));
+        if (panel) {
+            panel.hidden = isExpanded;
+        }
+    });
+});
+
 // Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
@@ -194,6 +222,8 @@ function initColorSimulator() {
     const favoritesList = document.getElementById('favoritesList');
     const floorTypeA = document.getElementById('floorTypeA');
     const floorTypeB = document.getElementById('floorTypeB');
+    const realismToggle = document.getElementById('realismToggle');
+    const threeDToggle = document.getElementById('threeDToggle');
 
     if (!paletteCards.length || !selectA || !selectB) {
         return;
@@ -260,6 +290,8 @@ function initColorSimulator() {
         status.textContent = contrast >= 0.2 ? 'Contraste: adequado' : 'Contraste: baixo';
     };
 
+    const threeDScenes = {};
+
     const applyPalette = (group) => {
         const select = group === 'A' ? selectA : selectB;
         const preview = document.querySelector(`.room-preview[data-preview="${group}"]`);
@@ -304,6 +336,90 @@ function initColorSimulator() {
         preview.querySelector('[data-part="accent"]').style.backgroundColor = toneMap.accent;
 
         updateContrast(group, toneMap.wall, toneMap.ceiling);
+
+        const sceneData = threeDScenes[group];
+        if (sceneData) {
+            sceneData.materials.floor.color.set(toneMap.floor);
+            sceneData.materials.wall.color.set(toneMap.wall);
+            sceneData.materials.ceiling.color.set(toneMap.ceiling);
+            sceneData.materials.accent.color.set(toneMap.accent);
+            sceneData.renderer.render(sceneData.scene, sceneData.camera);
+        }
+    };
+
+    const initThreeDPreview = (group) => {
+        const container = document.querySelector(`.room-preview-3d[data-preview3d="${group}"]`);
+        if (!container || !window.THREE) {
+            return null;
+        }
+
+        const scene = new window.THREE.Scene();
+        scene.background = new window.THREE.Color('#111820');
+
+        const camera = new window.THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 100);
+        camera.position.set(0, 2.2, 4.5);
+        camera.lookAt(0, 1.3, 0);
+
+        const renderer = new window.THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.outputColorSpace = window.THREE.SRGBColorSpace;
+        container.innerHTML = '';
+        container.appendChild(renderer.domElement);
+
+        const ambient = new window.THREE.AmbientLight(0xffffff, 0.85);
+        const keyLight = new window.THREE.DirectionalLight(0xffffff, 0.9);
+        keyLight.position.set(2, 4, 3);
+        scene.add(ambient, keyLight);
+
+        const wallMaterial = new window.THREE.MeshStandardMaterial({ color: '#d9d9d9', roughness: 0.6 });
+        const floorMaterial = new window.THREE.MeshStandardMaterial({ color: '#bfa98b', roughness: 0.9 });
+        const ceilingMaterial = new window.THREE.MeshStandardMaterial({ color: '#f5f5f5', roughness: 0.8 });
+        const accentMaterial = new window.THREE.MeshStandardMaterial({ color: '#6b5a4a', roughness: 0.6 });
+
+        const floor = new window.THREE.Mesh(new window.THREE.PlaneGeometry(6, 6), floorMaterial);
+        floor.rotation.x = -Math.PI / 2;
+        floor.position.y = 0;
+
+        const wall = new window.THREE.Mesh(new window.THREE.PlaneGeometry(6, 3), wallMaterial);
+        wall.position.z = -2.2;
+        wall.position.y = 1.5;
+
+        const ceiling = new window.THREE.Mesh(new window.THREE.PlaneGeometry(6, 6), ceilingMaterial);
+        ceiling.rotation.x = Math.PI / 2;
+        ceiling.position.y = 3;
+
+        const accent = new window.THREE.Mesh(new window.THREE.PlaneGeometry(1.2, 3), accentMaterial);
+        accent.position.set(2.4, 1.5, -2.1);
+
+        scene.add(floor, wall, ceiling, accent);
+
+        const resizeObserver = new ResizeObserver(entries => {
+            entries.forEach(entry => {
+                const { width, height } = entry.contentRect;
+                if (width && height) {
+                    camera.aspect = width / height;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(width, height);
+                    renderer.render(scene, camera);
+                }
+            });
+        });
+        resizeObserver.observe(container);
+
+        renderer.render(scene, camera);
+
+        return {
+            scene,
+            camera,
+            renderer,
+            materials: {
+                wall: wallMaterial,
+                floor: floorMaterial,
+                ceiling: ceilingMaterial,
+                accent: accentMaterial
+            }
+        };
     };
 
     const buildSnapshot = (group) => {
@@ -519,6 +635,55 @@ function initColorSimulator() {
             applyPalette('B');
         }
     });
+
+    if (realismToggle) {
+        realismToggle.addEventListener('change', () => {
+            const enabled = realismToggle.checked;
+            document.querySelectorAll('.room-preview').forEach(preview => {
+                preview.classList.toggle('realistic', enabled);
+            });
+        });
+    }
+
+    if (threeDToggle) {
+        const supportsWebGL = () => {
+            try {
+                const canvas = document.createElement('canvas');
+                return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+            } catch (error) {
+                return false;
+            }
+        };
+
+        if (!supportsWebGL() || !window.THREE) {
+            threeDToggle.disabled = true;
+            threeDToggle.parentElement.style.opacity = '0.6';
+        }
+
+        threeDToggle.addEventListener('change', () => {
+            const enabled = threeDToggle.checked;
+            document.querySelectorAll('.room-preview').forEach(preview => {
+                preview.classList.toggle('is-hidden', enabled);
+            });
+            document.querySelectorAll('.room-preview-3d').forEach(preview => {
+                preview.classList.toggle('is-hidden', !enabled);
+                preview.setAttribute('aria-hidden', String(!enabled));
+            });
+
+            if (enabled) {
+                if (!threeDScenes.A) {
+                    threeDScenes.A = initThreeDPreview('A');
+                }
+                if (!threeDScenes.B && !comparePreview.classList.contains('is-hidden')) {
+                    threeDScenes.B = initThreeDPreview('B');
+                }
+                applyPalette('A');
+                if (!comparePreview.classList.contains('is-hidden')) {
+                    applyPalette('B');
+                }
+            }
+        });
+    }
 
     const downloadButtons = document.querySelectorAll('.simulator-download');
     downloadButtons.forEach(button => {

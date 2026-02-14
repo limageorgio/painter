@@ -1126,6 +1126,64 @@ body.dark-mode .faq {
     opacity: 0.75;
 }
 
+.palette-accordion-toggle {
+    width: 100%;
+    text-align: left;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.35rem 1rem;
+    align-items: center;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+}
+
+.palette-accordion-toggle:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-lg);
+}
+
+.palette-accordion-toggle .accordion-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.palette-accordion-toggle .accordion-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-color);
+    opacity: 0.75;
+}
+
+.palette-accordion-toggle .accordion-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-color);
+    color: var(--white);
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.palette-accordion-toggle[aria-expanded="true"] .accordion-icon {
+    transform: rotate(45deg);
+}
+
+.palette-accordion-panel {
+    padding: 1.25rem 0 0;
+}
+
+.palette-accordion-panel .palettes-grid {
+    margin-bottom: 0;
+}
+
 .palette-usage-guide {
     margin: 40px 0 60px;
 }
@@ -1419,6 +1477,49 @@ body.dark-mode .faq {
     background: var(--light-bg);
 }
 
+.room-preview-3d {
+    position: relative;
+    height: 240px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+    background: #111820;
+}
+
+.room-preview-3d canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.preview-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #d9dde1;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 1rem;
+}
+
+.room-preview::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.7), transparent 55%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.08), transparent 40%);
+    opacity: 0;
+    transition: var(--transition);
+    pointer-events: none;
+}
+
+.room-preview.realistic::before {
+    opacity: 1;
+}
+
 .room-ceiling {
     position: absolute;
     top: 0;
@@ -1433,6 +1534,10 @@ body.dark-mode .faq {
     left: 0;
     right: 0;
     height: 50%;
+}
+
+.room-preview.realistic .room-wall {
+    box-shadow: inset 0 -20px 40px rgba(0, 0, 0, 0.15);
 }
 
 .room-accent {
@@ -1450,6 +1555,21 @@ body.dark-mode .faq {
     left: 0;
     right: 0;
     height: 25%;
+}
+
+.room-preview.realistic .room-floor {
+    background-image: repeating-linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.25) 0,
+        rgba(255, 255, 255, 0.25) 8px,
+        rgba(0, 0, 0, 0.08) 8px,
+        rgba(0, 0, 0, 0.08) 10px
+    );
+    background-blend-mode: soft-light;
+}
+
+.room-preview.realistic {
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.2);
 }
 
 .is-hidden {
