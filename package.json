@@ -4,9 +4,9 @@
   "description": "Site profissional de serviços de pintura residencial e comercial",
   "main": "index.html",
   "scripts": {
-    "dev": "http-server -p 8080 -c-1",
-    "start": "http-server -p 8080",
-    "preview": "http-server -p 3000"
+    "dev": "http-server -p 3000 -a 0.0.0.0 -c-1",
+    "start": "http-server -p 3000 -a 0.0.0.0",
+    "preview": "http-server -p 8000 -a 0.0.0.0"
   },
   "keywords": [
     "pintura",
