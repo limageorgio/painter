@@ -152,12 +152,45 @@ function loadDarkModePreference() {
     }
 }
 
+function initPaletteFilter() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const paletteCards = document.querySelectorAll('.palette-card');
+
+    if (!filterButtons.length || !paletteCards.length) {
+        return;
+    }
+
+    const applyFilter = (floorTone) => {
+        paletteCards.forEach(card => {
+            const tones = (card.dataset.floor || '').split(' ');
+            const shouldShow = floorTone === 'all' || tones.includes(floorTone);
+            card.classList.toggle('is-hidden', !shouldShow);
+        });
+    };
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            filterButtons.forEach(btn => {
+                btn.classList.remove('is-active');
+                btn.setAttribute('aria-pressed', 'false');
+            });
+
+            button.classList.add('is-active');
+            button.setAttribute('aria-pressed', 'true');
+            applyFilter(button.dataset.floor || 'all');
+        });
+    });
+}
+
 // Initialize page
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Pintura Profissional website loaded successfully');
     
     // Carregar dark mode preference
     loadDarkModePreference();
+
+    // Inicializar filtro de paletas por tom do piso
+    initPaletteFilter();
     
     // Add any initialization code here
     const nav = document.querySelector('.nav');
