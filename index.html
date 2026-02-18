@@ -1118,9 +1118,6 @@
                     <div class="simulator-controls">
                         <div class="control-group" data-group="A">
                             <h4>Combinacao A</h4>
-                            <label for="paletteSelectA">Paleta</label>
-                            <select id="paletteSelectA" class="simulator-select"></select>
-
                             <label for="roomPresetA">Ambiente</label>
                             <select id="roomPresetA" class="simulator-select">
                                 <option value="sala">Sala de Estar</option>
@@ -1151,8 +1148,9 @@
                             </select>
 
                             <div class="tone-mapping">
-                                <div class="tone-row">
-                                    <span>Piso</span>
+                                <div class="tone-row-expanded">
+                                    <label>Piso</label>
+                                    <select class="palette-select-part" data-target="floor" data-group="A"></select>
                                     <select class="tone-select" data-target="floor" data-group="A">
                                         <option value="1">Tom 1</option>
                                         <option value="2">Tom 2</option>
@@ -1166,24 +1164,27 @@
                                     </label>
                                     <input type="color" class="custom-floor-input" data-group="A" value="#cbbba5" aria-label="Cor do piso personalizada">
                                 </div>
-                                <div class="tone-row">
-                                    <span>Parede</span>
+                                <div class="tone-row-expanded">
+                                    <label>Parede</label>
+                                    <select class="palette-select-part" data-target="wall" data-group="A"></select>
                                     <select class="tone-select" data-target="wall" data-group="A">
                                         <option value="1">Tom 1</option>
                                         <option value="2" selected>Tom 2</option>
                                         <option value="3">Tom 3</option>
                                     </select>
                                 </div>
-                                <div class="tone-row">
-                                    <span>Teto</span>
+                                <div class="tone-row-expanded">
+                                    <label>Teto</label>
+                                    <select class="palette-select-part" data-target="ceiling" data-group="A"></select>
                                     <select class="tone-select" data-target="ceiling" data-group="A">
                                         <option value="1" selected>Tom 1</option>
                                         <option value="2">Tom 2</option>
                                         <option value="3">Tom 3</option>
                                     </select>
                                 </div>
-                                <div class="tone-row">
-                                    <span>Destaque</span>
+                                <div class="tone-row-expanded">
+                                    <label>Destaque</label>
+                                    <select class="palette-select-part" data-target="accent" data-group="A"></select>
                                     <select class="tone-select" data-target="accent" data-group="A">
                                         <option value="1">Tom 1</option>
                                         <option value="2">Tom 2</option>
@@ -1204,9 +1205,6 @@
 
                         <div class="control-group is-hidden" data-group="B" id="compareControls">
                             <h4>Combinacao B</h4>
-                            <label for="paletteSelectB">Paleta</label>
-                            <select id="paletteSelectB" class="simulator-select"></select>
-
                             <label for="roomPresetB">Ambiente</label>
                             <select id="roomPresetB" class="simulator-select">
                                 <option value="sala">Sala de Estar</option>
@@ -1237,8 +1235,9 @@
                             </select>
 
                             <div class="tone-mapping">
-                                <div class="tone-row">
-                                    <span>Piso</span>
+                                <div class="tone-row-expanded">
+                                    <label>Piso</label>
+                                    <select class="palette-select-part" data-target="floor" data-group="B"></select>
                                     <select class="tone-select" data-target="floor" data-group="B">
                                         <option value="1">Tom 1</option>
                                         <option value="2">Tom 2</option>
@@ -1252,24 +1251,27 @@
                                     </label>
                                     <input type="color" class="custom-floor-input" data-group="B" value="#b59e87" aria-label="Cor do piso personalizada">
                                 </div>
-                                <div class="tone-row">
-                                    <span>Parede</span>
+                                <div class="tone-row-expanded">
+                                    <label>Parede</label>
+                                    <select class="palette-select-part" data-target="wall" data-group="B"></select>
                                     <select class="tone-select" data-target="wall" data-group="B">
                                         <option value="1">Tom 1</option>
                                         <option value="2" selected>Tom 2</option>
                                         <option value="3">Tom 3</option>
                                     </select>
                                 </div>
-                                <div class="tone-row">
-                                    <span>Teto</span>
+                                <div class="tone-row-expanded">
+                                    <label>Teto</label>
+                                    <select class="palette-select-part" data-target="ceiling" data-group="B"></select>
                                     <select class="tone-select" data-target="ceiling" data-group="B">
                                         <option value="1" selected>Tom 1</option>
                                         <option value="2">Tom 2</option>
                                         <option value="3">Tom 3</option>
                                     </select>
                                 </div>
-                                <div class="tone-row">
-                                    <span>Destaque</span>
+                                <div class="tone-row-expanded">
+                                    <label>Destaque</label>
+                                    <select class="palette-select-part" data-target="accent" data-group="B"></select>
                                     <select class="tone-select" data-target="accent" data-group="B">
                                         <option value="1">Tom 1</option>
                                         <option value="2">Tom 2</option>
@@ -1301,6 +1303,11 @@
                         <label class="compare-toggle">
                             <input type="checkbox" id="threeDToggle">
                             Modo 3D (beta)
+                        </label>
+
+                        <label class="compare-toggle">
+                            <input type="checkbox" id="livePageToggle">
+                            Testar cores na página
                         </label>
 
                         <div class="favorites-panel">

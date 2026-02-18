@@ -214,8 +214,6 @@ function initPaletteFilter() {
 
 function initColorSimulator() {
     const paletteCards = document.querySelectorAll('.palette-card');
-    const selectA = document.getElementById('paletteSelectA');
-    const selectB = document.getElementById('paletteSelectB');
     const compareToggle = document.getElementById('compareToggle');
     const compareControls = document.getElementById('compareControls');
     const comparePreview = document.getElementById('comparePreview');
@@ -224,8 +222,9 @@ function initColorSimulator() {
     const floorTypeB = document.getElementById('floorTypeB');
     const realismToggle = document.getElementById('realismToggle');
     const threeDToggle = document.getElementById('threeDToggle');
+    const livePageToggle = document.getElementById('livePageToggle');
 
-    if (!paletteCards.length || !selectA || !selectB) {
+    if (!paletteCards.length) {
         return;
     }
 
@@ -266,6 +265,14 @@ function initColorSimulator() {
         });
     };
 
+    const buildPaletteSelectors = (group) => {
+        const paletteSelects = document.querySelectorAll(`.palette-select-part[data-group="${group}"]`);
+        paletteSelects.forEach(select => {
+            buildOptions(select);
+            select.value = '0'; // Definir primeira paleta como padrão
+        });
+    };
+
     const getLuminance = (color) => {
         const ctx = document.createElement('canvas').getContext('2d');
         ctx.fillStyle = color;
@@ -291,9 +298,68 @@ function initColorSimulator() {
     };
 
     const threeDScenes = {};
+    let currentLiveGroup = 'A';
+    let livePageEnabled = false;
+
+    const getContrastColor = (bgColor) => {
+        const luminance = getLuminance(bgColor);
+        return luminance > 0.5 ? '#1a2332' : '#f5f5f5';
+    };
+
+    const applyLiveTheme = (ceiling, wall, floor) => {
+        const header = document.querySelector('.header');
+        const footer = document.querySelector('.footer');
+        const body = document.body;
+
+        if (header) {
+            header.style.backgroundColor = ceiling;
+            header.style.color = getContrastColor(ceiling);
+            header.querySelectorAll('.logo, .nav a, .menu-toggle').forEach(el => {
+                el.style.color = getContrastColor(ceiling);
+            });
+        }
+
+        if (footer) {
+            footer.style.backgroundColor = floor;
+            footer.style.color = getContrastColor(floor);
+            footer.querySelectorAll('h4, p, a, .social-links a').forEach(el => {
+                el.style.color = getContrastColor(floor);
+            });
+        }
+
+        body.style.backgroundColor = wall;
+        body.style.color = getContrastColor(wall);
+
+        document.querySelectorAll('.section-title, .section-title-wrapper, .section-subtitle, h1, h2, h3, h4, p, li, a:not(.header a):not(.footer a)').forEach(el => {
+            if (!el.closest('.header') && !el.closest('.footer') && !el.closest('.room-preview')) {
+                el.style.color = getContrastColor(wall);
+            }
+        });
+
+        const cardLuminance = getLuminance(wall);
+        const cardBg = cardLuminance > 0.5 ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.06)';
+        const cardBorder = cardLuminance > 0.5 ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.12)';
+        
+        document.querySelectorAll('.service-card, .palette-card, .methodology-card, .testimonial-card, .faq-item, .simulator-card, .nav-card, .palette-accordion-toggle, .usage-card, .differential-card').forEach(card => {
+            card.style.backgroundColor = cardBg;
+            card.style.borderColor = cardBorder;
+            if (!card.closest('.header') && !card.closest('.footer')) {
+                card.style.color = getContrastColor(wall);
+            }
+        });
+
+        document.querySelectorAll('.btn').forEach(btn => {
+            if (!btn.closest('.header') && !btn.closest('.footer')) {
+                const btnBg = cardLuminance > 0.5 ? '#1a2332' : '#f5f5f5';
+                const btnText = cardLuminance > 0.5 ? '#f5f5f5' : '#1a2332';
+                btn.style.backgroundColor = btnBg;
+                btn.style.color = btnText;
+                btn.style.borderColor = btnBg;
+            }
+        });
+    };
 
     const applyPalette = (group) => {
-        const select = group === 'A' ? selectA : selectB;
         const preview = document.querySelector(`.room-preview[data-preview="${group}"]`);
         const customFloorCheck = document.querySelector(`.custom-floor-check[data-group="${group}"]`);
         const customFloorInput = document.querySelector(`.custom-floor-input[data-group="${group}"]`);
@@ -302,12 +368,19 @@ function initColorSimulator() {
             return;
         }
 
-        const paletteIndex = Number(select.value) || 0;
-        const palette = palettes[paletteIndex];
         const toneMap = {};
 
-        document.querySelectorAll(`.tone-select[data-group="${group}"]`).forEach(selectEl => {
-            toneMap[selectEl.dataset.target] = palette.swatches[Number(selectEl.value) - 1];
+        // Para cada parte (floor, wall, ceiling, accent), buscar paleta e tom individuais
+        document.querySelectorAll(`.tone-select[data-group="${group}"]`).forEach(toneSelect => {
+            const target = toneSelect.dataset.target;
+            const paletteSelect = document.querySelector(`.palette-select-part[data-group="${group}"][data-target="${target}"]`);
+            
+            if (paletteSelect) {
+                const paletteIndex = Number(paletteSelect.value) || 0;
+                const palette = palettes[paletteIndex];
+                const toneIndex = Number(toneSelect.value) - 1;
+                toneMap[target] = palette.swatches[toneIndex];
+            }
         });
 
         if (customFloorCheck && customFloorInput) {
@@ -341,9 +414,15 @@ function initColorSimulator() {
         if (sceneData) {
             sceneData.materials.floor.color.set(toneMap.floor);
             sceneData.materials.wall.color.set(toneMap.wall);
+            sceneData.materials.leftWall.color.set(toneMap.wall);
+            sceneData.materials.rightWall.color.set(toneMap.wall);
             sceneData.materials.ceiling.color.set(toneMap.ceiling);
             sceneData.materials.accent.color.set(toneMap.accent);
             sceneData.renderer.render(sceneData.scene, sceneData.camera);
+        }
+
+        if (group === currentLiveGroup && livePageEnabled) {
+            applyLiveTheme(toneMap.ceiling, toneMap.wall, toneMap.floor);
         }
     };
 
@@ -376,6 +455,8 @@ function initColorSimulator() {
         const floorMaterial = new window.THREE.MeshStandardMaterial({ color: '#bfa98b', roughness: 0.9 });
         const ceilingMaterial = new window.THREE.MeshStandardMaterial({ color: '#f5f5f5', roughness: 0.8 });
         const accentMaterial = new window.THREE.MeshStandardMaterial({ color: '#6b5a4a', roughness: 0.6 });
+        const leftWallMaterial = new window.THREE.MeshStandardMaterial({ color: '#d9d9d9', roughness: 0.6 });
+        const rightWallMaterial = new window.THREE.MeshStandardMaterial({ color: '#d9d9d9', roughness: 0.6 });
 
         const floor = new window.THREE.Mesh(new window.THREE.PlaneGeometry(6, 6), floorMaterial);
         floor.rotation.x = -Math.PI / 2;
@@ -385,6 +466,14 @@ function initColorSimulator() {
         wall.position.z = -2.2;
         wall.position.y = 1.5;
 
+        const leftWall = new window.THREE.Mesh(new window.THREE.PlaneGeometry(6, 3), leftWallMaterial);
+        leftWall.rotation.y = Math.PI / 2;
+        leftWall.position.set(-3, 1.5, 0.8);
+
+        const rightWall = new window.THREE.Mesh(new window.THREE.PlaneGeometry(6, 3), rightWallMaterial);
+        rightWall.rotation.y = -Math.PI / 2;
+        rightWall.position.set(3, 1.5, 0.8);
+
         const ceiling = new window.THREE.Mesh(new window.THREE.PlaneGeometry(6, 6), ceilingMaterial);
         ceiling.rotation.x = Math.PI / 2;
         ceiling.position.y = 3;
@@ -392,7 +481,21 @@ function initColorSimulator() {
         const accent = new window.THREE.Mesh(new window.THREE.PlaneGeometry(1.2, 3), accentMaterial);
         accent.position.set(2.4, 1.5, -2.1);
 
-        scene.add(floor, wall, ceiling, accent);
+        const edgesMaterial = new window.THREE.LineBasicMaterial({ color: 0x000000, opacity: 0.15, transparent: true });
+        
+        const wallEdges = new window.THREE.EdgesGeometry(wall.geometry);
+        const wallLine = new window.THREE.LineSegments(wallEdges, edgesMaterial);
+        wall.add(wallLine);
+
+        const leftWallEdges = new window.THREE.EdgesGeometry(leftWall.geometry);
+        const leftWallLine = new window.THREE.LineSegments(leftWallEdges, edgesMaterial);
+        leftWall.add(leftWallLine);
+
+        const rightWallEdges = new window.THREE.EdgesGeometry(rightWall.geometry);
+        const rightWallLine = new window.THREE.LineSegments(rightWallEdges, edgesMaterial);
+        rightWall.add(rightWallLine);
+
+        scene.add(floor, wall, leftWall, rightWall, ceiling, accent);
 
         const resizeObserver = new ResizeObserver(entries => {
             entries.forEach(entry => {
@@ -415,6 +518,8 @@ function initColorSimulator() {
             renderer,
             materials: {
                 wall: wallMaterial,
+                leftWall: leftWallMaterial,
+                rightWall: rightWallMaterial,
                 floor: floorMaterial,
                 ceiling: ceilingMaterial,
                 accent: accentMaterial
@@ -423,20 +528,28 @@ function initColorSimulator() {
     };
 
     const buildSnapshot = (group) => {
-        const paletteIndex = Number((group === 'A' ? selectA : selectB).value) || 0;
-        const palette = palettes[paletteIndex];
         const preset = document.getElementById(`roomPreset${group}`)?.value || 'sala';
         const tones = {};
+        const palettes = {};
+        
         document.querySelectorAll(`.tone-select[data-group="${group}"]`).forEach(selectEl => {
-            tones[selectEl.dataset.target] = selectEl.value;
+            const target = selectEl.dataset.target;
+            tones[target] = selectEl.value;
         });
+        
+        document.querySelectorAll(`.palette-select-part[data-group="${group}"]`).forEach(selectEl => {
+            const target = selectEl.dataset.target;
+            palettes[target] = selectEl.value;
+        });
+        
         const customFloorCheck = document.querySelector(`.custom-floor-check[data-group="${group}"]`);
         const customFloorInput = document.querySelector(`.custom-floor-input[data-group="${group}"]`);
+        
         return {
             id: `${Date.now()}-${group}`,
             group,
-            paletteIndex,
-            paletteName: palette.name,
+            palettes,
+            paletteName: 'Combinação Mista',
             preset,
             tones,
             customFloor: customFloorCheck?.checked || false,
@@ -446,12 +559,23 @@ function initColorSimulator() {
 
     const applySnapshot = (snapshot) => {
         const targetGroup = snapshot.group || 'A';
-        const select = targetGroup === 'A' ? selectA : selectB;
-        select.value = String(snapshot.paletteIndex || 0);
+        
         const presetSelect = document.getElementById(`roomPreset${targetGroup}`);
         if (presetSelect) {
             presetSelect.value = snapshot.preset || 'sala';
         }
+        
+        // Aplicar paletas individuais
+        if (snapshot.palettes) {
+            document.querySelectorAll(`.palette-select-part[data-group="${targetGroup}"]`).forEach(selectEl => {
+                const target = selectEl.dataset.target;
+                if (snapshot.palettes[target] !== undefined) {
+                    selectEl.value = String(snapshot.palettes[target]);
+                }
+            });
+        }
+        
+        // Aplicar tons
         document.querySelectorAll(`.tone-select[data-group="${targetGroup}"]`).forEach(selectEl => {
             const target = selectEl.dataset.target;
             selectEl.value = snapshot.tones?.[target] || selectEl.value;
@@ -542,15 +666,19 @@ function initColorSimulator() {
     };
 
     const bindGroup = (group) => {
-        const select = group === 'A' ? selectA : selectB;
         const presetSelect = document.getElementById(`roomPreset${group}`);
         const buttons = document.querySelectorAll(`.simulator-btn[data-group="${group}"]`);
         const customFloorCheck = document.querySelector(`.custom-floor-check[data-group="${group}"]`);
         const customFloorInput = document.querySelector(`.custom-floor-input[data-group="${group}"]`);
         const floorTypeSelect = group === 'A' ? floorTypeA : floorTypeB;
 
-        select.addEventListener('change', () => applyPalette(group));
+        // Adicionar eventos aos seletores de paleta individuais
+        document.querySelectorAll(`.palette-select-part[data-group="${group}"]`).forEach(selectEl => {
+            selectEl.addEventListener('change', () => applyPalette(group));
+        });
+
         presetSelect.addEventListener('change', () => applyPreset(group, presetSelect.value));
+        
         document.querySelectorAll(`.tone-select[data-group="${group}"]`).forEach(selectEl => {
             selectEl.addEventListener('change', () => applyPalette(group));
         });
@@ -595,8 +723,8 @@ function initColorSimulator() {
         applyPreset(group, presetSelect.value || 'sala');
     };
 
-    buildOptions(selectA);
-    buildOptions(selectB);
+    buildPaletteSelectors('A');
+    buildPaletteSelectors('B');
     bindGroup('A');
     bindGroup('B');
     renderFavorites(loadFavorites());
@@ -627,12 +755,18 @@ function initColorSimulator() {
         applyPalette('B');
     });
 
+    applyPalette('A');
+
     compareToggle.addEventListener('change', () => {
         const isActive = compareToggle.checked;
         compareControls.classList.toggle('is-hidden', !isActive);
         comparePreview.classList.toggle('is-hidden', !isActive);
         if (isActive) {
+            currentLiveGroup = 'B';
             applyPalette('B');
+        } else {
+            currentLiveGroup = 'A';
+            applyPalette('A');
         }
     });
 
@@ -694,8 +828,7 @@ function initColorSimulator() {
                 return;
             }
 
-            const paletteIndex = Number((group === 'A' ? selectA : selectB).value) || 0;
-            const paletteName = palettes[paletteIndex]?.name || 'paleta';
+            const paletteName = 'combinacao-personalizada';
             const preset = document.getElementById(`roomPreset${group}`)?.value || 'ambiente';
 
             const getColor = (part) => {
@@ -760,7 +893,59 @@ function initColorSimulator() {
             link.click();
         });
     });
+
+    if (livePageToggle) {
+        livePageToggle.addEventListener('change', () => {
+            livePageEnabled = livePageToggle.checked;
+            if (livePageEnabled) {
+                applyPalette(currentLiveGroup);
+            } else {
+                resetLiveTheme();
+            }
+        });
+    }
 }
+
+const resetLiveTheme = () => {
+    const header = document.querySelector('.header');
+    const footer = document.querySelector('.footer');
+    const body = document.body;
+
+    if (header) {
+        header.style.backgroundColor = '';
+        header.style.color = '';
+        header.querySelectorAll('.logo, .nav a, .menu-toggle').forEach(el => {
+            el.style.color = '';
+        });
+    }
+
+    if (footer) {
+        footer.style.backgroundColor = '';
+        footer.style.color = '';
+        footer.querySelectorAll('h4, p, a, .social-links a').forEach(el => {
+            el.style.color = '';
+        });
+    }
+
+    body.style.backgroundColor = '';
+    body.style.color = '';
+
+    document.querySelectorAll('.section-title, .section-title-wrapper, .section-subtitle, h1, h2, h3, h4, p, li, a:not(.header a):not(.footer a)').forEach(el => {
+        el.style.color = '';
+    });
+
+    document.querySelectorAll('.service-card, .palette-card, .methodology-card, .testimonial-card, .faq-item, .simulator-card, .nav-card, .palette-accordion-toggle, .usage-card, .differential-card').forEach(card => {
+        card.style.backgroundColor = '';
+        card.style.borderColor = '';
+        card.style.color = '';
+    });
+
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.style.backgroundColor = '';
+        btn.style.color = '';
+        btn.style.borderColor = '';
+    });
+};
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', () => {

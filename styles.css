@@ -1270,6 +1270,30 @@ body.dark-mode .faq {
     color: var(--text-color);
 }
 
+.palette-color-preview {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    min-height: 40px;
+    align-items: center;
+}
+
+.palette-preview-swatch {
+    flex: 1;
+    height: 32px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: transform 0.2s ease;
+}
+
+.palette-preview-swatch:hover {
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
 .tone-mapping {
     margin-top: 1rem;
     display: flex;
@@ -1319,6 +1343,33 @@ body.dark-mode .faq {
     border: 1px solid var(--card-border);
     background: var(--input-bg);
     color: var(--text-color);
+}
+
+.tone-row-expanded {
+    display: grid;
+    grid-template-columns: 80px 1fr 100px;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.tone-row-expanded label {
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.tone-row-expanded select {
+    padding: 0.5rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
+    background: var(--input-bg);
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+.palette-select-part {
+    min-width: 0;
 }
 
 .control-actions {
@@ -1940,6 +1991,27 @@ body.dark-mode .faq {
 
     .footer-content {
         grid-template-columns: 1fr;
+    }
+
+    .tone-row-expanded {
+        grid-template-columns: 1fr 100px;
+        grid-template-rows: auto auto;
+        gap: 0.5rem;
+    }
+
+    .tone-row-expanded label {
+        grid-column: 1 / -1;
+        margin-bottom: 0;
+    }
+
+    .tone-row-expanded .palette-select-part {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .tone-row-expanded .tone-select {
+        grid-column: 2;
+        grid-row: 2;
     }
 }
 
