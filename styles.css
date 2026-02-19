@@ -45,6 +45,22 @@ body {
     background-color: var(--bg-color);
     line-height: 1.6;
     transition: var(--transition);
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 200px;
+    height: 200px;
+    background-image: url('images/watermark.png.jpg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
 }
 
 html {
@@ -123,23 +139,8 @@ html {
     margin: 0;
 }
 
-/* Logo no background (decorativa com baixa opacidade) */
-body::before {
-    content: '🎨';
-    position: fixed;
-    bottom: -100px;
-    right: -100px;
-    width: 400px;
-    height: 400px;
-    font-size: 300px;
-    opacity: 0.05;
-    pointer-events: none;
-    z-index: 0;
-    line-height: 1;
-}
-
 body.dark-mode::before {
-    opacity: 0.08;
+    opacity: 0.15;
 }
 
 .nav {
