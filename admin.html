@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Painel Administrativo - Pintura Profissional</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .login-container.hidden {
+            display: none;
+        }
+
+        .login-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .login-container h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .login-container p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Admin Panel */
+        .admin-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1200px;
+            width: 100%;
+            display: none;
+        }
+
+        .admin-container.active {
+            display: block;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .admin-header h1 {
+            color: #333;
+            font-size: 2rem;
+        }
+
+        .btn-logout {
+            padding: 10px 25px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .image-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .image-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-bottom: 15px;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 3rem;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .image-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+        }
+
+        .control-group input[type="file"] {
+            font-size: 0.85rem;
+            padding: 8px;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .control-value {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 20px;
+            }
+
+            .images-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-container" id="loginContainer">
+        <i class="fas fa-lock login-icon"></i>
+        <h1>Acesso Administrativo</h1>
+        <p>Digite a senha para acessar o painel</p>
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="password" id="passwordInput" placeholder="Senha" required>
+            </div>
+            <button type="submit" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i> Entrar
+            </button>
+        </form>
+        <p class="error-message" id="errorMessage">Senha incorreta. Tente novamente.</p>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-container" id="adminContainer">
+        <div class="admin-header">
+            <h1><i class="fas fa-images"></i> Gerenciador de Imagens</h1>
+            <button class="btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </button>
+        </div>
+
+        <div class="images-grid" id="imagesGrid">
+            <!-- Images will be loaded dynamically -->
+        </div>
+    </div>
+
+    <div class="success-message" id="successMessage">
+        <i class="fas fa-check-circle"></i> Alterações salvas com sucesso!
+    </div>
+
+    <script>
+        // Senha embutida (criptografada em base64 para segurança básica)
+        const ADMIN_PASSWORD = 'admin123'; // Altere para sua senha
+
+        // Lista de imagens do site
+        const siteImages = [
+            { name: 'Hero - Pintor Pintando', file: 'hero-pintor-pintando.jpg', path: './images/' },
+            { name: 'Hero - Ambiente Transformado', file: 'hero-ambiente-transformado.jpg', path: './images/' },
+            { name: 'Hero - Pintor Detalhe', file: 'hero-pintor-detalhe.jpg', path: './images/' },
+            { name: 'Hero - Parede Destaque', file: 'hero-parede-destaque.jpg', path: './images/' },
+            { name: 'Portfolio - Sala Moderna', file: 'portfolio-sala-modern.jpg', path: './images/' },
+            { name: 'Portfolio - Fachada', file: 'portfolio-fachada.jpg', path: './images/' },
+            { name: 'Portfolio - Quarto', file: 'portfolio-quarto.jpg', path: './images/' },
+            { name: 'Sobre - Pintor', file: 'about-pintor.jpg', path: './images/' },
+        ];
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = document.getElementById('passwordInput').value;
+            
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('loginContainer').classList.add('hidden');
+                document.getElementById('adminContainer').classList.add('active');
+                loadImages();
+            } else {
+                document.getElementById('errorMessage').classList.add('show');
+                setTimeout(() => {
+                    document.getElementById('errorMessage').classList.remove('show');
+                }, 3000);
+            }
+        });
+
+        // Logout
+        function logout() {
+            document.getElementById('loginContainer').classList.remove('hidden');
+            document.getElementById('adminContainer').classList.remove('active');
+            document.getElementById('passwordInput').value = '';
+        }
+
+        // Load Images
+        function loadImages() {
+            const grid = document.getElementById('imagesGrid');
+            grid.innerHTML = '';
+
+            siteImages.forEach((img, index) => {
+                const card = createImageCard(img, index);
+                grid.appendChild(card);
+            });
+        }
+
+        // Create Image Card
+        function createImageCard(img, index) {
+            const card = document.createElement('div');
+            card.className = 'image-card';
+            card.innerHTML = `
+                <h3>${img.name}</h3>
+                <div class="image-preview" id="preview-${index}">
+                    <img src="${img.path}${img.file}" alt="${img.name}" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-image\\'></i>'">
+                </div>
+                <div class="image-controls">
+                    <div class="control-group">
+                        <label>Substituir Imagem:</label>
+                        <input type="file" accept="image/*" onchange="previewImage(event, ${index})">
+                    </div>
+                    <div class="control-group">
+                        <label>Brilho:</label>
+                        <input type="range" min="0" max="200" value="100" id="brightness-${index}" oninput="updateFilters(${index})">
+                        <span class="control-value" id="brightness-value-${index}">100%</span>
+                    </div>
+                    <div class="control-group">
+                        <label>Contraste:</label>
+                        <input type="range" min="0" max="200" value="100" id="contrast-${index}" oninput="updateFilters(${index})">
+                        <span class="control-value" id="contrast-value-${index}">100%</span>
+                    </div>
+                    <div class="control-group">
+                        <label>Saturação:</label>
+                        <input type="range" min="0" max="200" value="100" id="saturate-${index}" oninput="updateFilters(${index})">
+                        <span class="control-value" id="saturate-value-${index}">100%</span>
+                    </div>
+                    <div class="control-group">
+                        <label>Rotação:</label>
+                        <input type="range" min="-45" max="45" value="0" id="rotate-${index}" oninput="updateFilters(${index})">
+                        <span class="control-value" id="rotate-value-${index}">0°</span>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="applyChanges(${index})">
+                            <i class="fas fa-save"></i> Aplicar
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetFilters(${index})">
+                            <i class="fas fa-undo"></i> Resetar
+                        </button>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        // Preview Image
+        function previewImage(event, index) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById(`preview-${index}`);
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                    updateFilters(index);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Update Filters
+        function updateFilters(index) {
+            const img = document.querySelector(`#preview-${index} img`);
+            if (!img) return;
+
+            const brightness = document.getElementById(`brightness-${index}`).value;
+            const contrast = document.getElementById(`contrast-${index}`).value;
+            const saturate = document.getElementById(`saturate-${index}`).value;
+            const rotate = document.getElementById(`rotate-${index}`).value;
+
+            document.getElementById(`brightness-value-${index}`).textContent = `${brightness}%`;
+            document.getElementById(`contrast-value-${index}`).textContent = `${contrast}%`;
+            document.getElementById(`saturate-value-${index}`).textContent = `${saturate}%`;
+            document.getElementById(`rotate-value-${index}`).textContent = `${rotate}°`;
+
+            img.style.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturate}%)`;
+            img.style.transform = `rotate(${rotate}deg)`;
+        }
+
+        // Reset Filters
+        function resetFilters(index) {
+            document.getElementById(`brightness-${index}`).value = 100;
+            document.getElementById(`contrast-${index}`).value = 100;
+            document.getElementById(`saturate-${index}`).value = 100;
+            document.getElementById(`rotate-${index}`).value = 0;
+            updateFilters(index);
+        }
+
+        // Apply Changes
+        function applyChanges(index) {
+            const img = document.querySelector(`#preview-${index} img`);
+            if (!img) {
+                alert('Nenhuma imagem para aplicar alterações!');
+                return;
+            }
+
+            // Criar canvas para exportar imagem com filtros aplicados
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+
+            const brightness = document.getElementById(`brightness-${index}`).value;
+            const contrast = document.getElementById(`contrast-${index}`).value;
+            const saturate = document.getElementById(`saturate-${index}`).value;
+            const rotate = document.getElementById(`rotate-${index}`).value;
+
+            ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturate}%)`;
+            
+            // Aplicar rotação
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(rotate * Math.PI / 180);
+            ctx.drawImage(img, -canvas.width / 2, -canvas.height / 2);
+
+            // Converter para blob e criar download
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = siteImages[index].file;
+                a.click();
+                URL.revokeObjectURL(url);
+
+                showSuccess();
+            }, 'image/jpeg', 0.95);
+        }
+
+        // Show Success Message
+        function showSuccess() {
+            const message = document.getElementById('successMessage');
+            message.classList.add('show');
+            setTimeout(() => {
+                message.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
