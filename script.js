@@ -948,6 +948,61 @@ const resetLiveTheme = () => {
 };
 
 // Load trends from localStorage and render them on the page
+function loadAndRenderHeroGallery() {
+    const gallery = document.querySelector('.hero-gallery-grid');
+    if (!gallery) {
+        return;
+    }
+
+    const stored = localStorage.getItem('adminImages');
+    let images = [];
+
+    if (stored) {
+        try {
+            images = JSON.parse(stored);
+        } catch (error) {
+            console.warn('Falha ao ler imagens do admin', error);
+            return; // Keep original images if admin data is corrupted
+        }
+    }
+
+    if (images.length === 0) {
+        return; // Keep original images if no admin images
+    }
+
+    // Usar as primeiras 4 imagens do admin para a galeria hero
+    const galleryImages = images.slice(0, 4);
+    
+    // Define class names para manter o layout com rotações
+    const galleryClasses = [
+        'large hero-rotated-left',
+        'medium hero-rotated-right',
+        'small',
+        'medium hero-rotated-left'
+    ];
+
+    const altTexts = [
+        'Pintor profissional pintando parede com técnica profissional',
+        'Ambiente transformado com pintura profissional',
+        'Detalhe de pintor em ação com acabamento profissional',
+        'Parede pintada profissionalmente com acabamento impecável'
+    ];
+
+    gallery.innerHTML = '';
+
+    galleryImages.forEach((img, index) => {
+        const src = img.path ? `${img.path}${img.file}` : `./images/${img.file}`;
+        const item = document.createElement('div');
+        item.className = `hero-gallery-item ${galleryClasses[index]}`;
+        item.innerHTML = `
+            <div class="hero-gallery-frame">
+                <img src="${src}" alt="${altTexts[index]}">
+            </div>
+        `;
+        gallery.appendChild(item);
+    });
+}
+
 function loadAndRenderTrends() {
     const trendsContainer = document.getElementById('trendsContainer');
     if (!trendsContainer) {
@@ -1021,6 +1076,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Carregar dark mode preference
     loadDarkModePreference();
+
+    // Carregar imagens da galeria hero dari admin
+    loadAndRenderHeroGallery();
 
     // Carregar trends from admin
     loadAndRenderTrends();
