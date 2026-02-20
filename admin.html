@@ -130,6 +130,12 @@
             font-size: 2rem;
         }
 
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
         .btn-logout {
             padding: 10px 25px;
             background: #e74c3c;
@@ -307,6 +313,131 @@
             border-color: #667eea;
         }
 
+        /* Tabs */
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Suppliers Grid */
+        .suppliers-admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .supplier-admin-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .supplier-admin-card h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .supplier-logo-preview {
+            width: 100%;
+            height: 120px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            background: white;
+        }
+
+        .supplier-logo-preview img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .supplier-logo-preview i {
+            font-size: 3rem;
+            color: #ccc;
+        }
+
+        /* Trends Grid */
+        .trends-admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .trend-admin-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .trend-color-preview {
+            width: 100%;
+            height: 100px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .trend-admin-card input,
+        .trend-admin-card textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .trend-admin-card textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .trend-admin-card input:focus,
+        .trend-admin-card textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
         .success-message {
             position: fixed;
             top: 20px;
@@ -374,27 +505,79 @@
     <div class="admin-container" id="adminContainer">
         <div class="admin-header">
             <h1><i class="fas fa-images"></i> Gerenciador de Imagens</h1>
-            <button class="btn-logout" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i> Sair
-            </button>
-        </div>
-
-        <div class="admin-actions">
-            <div class="add-form">
-                <input type="text" id="newImageName" placeholder="Nome da imagem">
-                <input type="text" id="newImageFile" placeholder="Arquivo (ex: nova.jpg)">
-                <input type="text" id="newImagePath" value="./images/" placeholder="Pasta">
-                <button class="btn btn-primary" type="button" onclick="addImage()">
-                    <i class="fas fa-plus"></i> Incluir imagem
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="exportConfig()" title="Exportar todas as configurações">
+                    <i class="fas fa-download"></i> Exportar
                 </button>
-                <button class="btn btn-secondary" type="button" onclick="resetImageList()">
-                    <i class="fas fa-rotate-left"></i> Restaurar lista padrao
+                <button class="btn btn-secondary" onclick="document.getElementById('importInput').click()" title="Importar configurações">
+                    <i class="fas fa-upload"></i> Importar
+                </button>
+                <input type="file" id="importInput" accept=".json" style="display: none;" onchange="importConfig(event)">
+                <button class="btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Sair
                 </button>
             </div>
         </div>
 
-        <div class="images-grid" id="imagesGrid">
-            <!-- Images will be loaded dynamically -->
+        <!-- Tabs Navigation -->
+        <div class="admin-tabs">
+            <button class="tab-btn active" onclick="switchTab('images')">
+                <i class="fas fa-image"></i> Imagens Gerais
+            </button>
+            <button class="tab-btn" onclick="switchTab('suppliers')">
+                <i class="fas fa-industry"></i> Logos Fornecedores
+            </button>
+            <button class="tab-btn" onclick="switchTab('trends')">
+                <i class="fas fa-palette"></i> Cores do Ano
+            </button>
+        </div>
+
+        <!-- Tab Content: Images -->
+        <div class="tab-content active" id="tabImages">
+            <div class="admin-actions">
+                <div class="add-form">
+                    <input type="text" id="newImageName" placeholder="Nome da imagem">
+                    <input type="text" id="newImageFile" placeholder="Arquivo (ex: nova.jpg)">
+                    <input type="text" id="newImagePath" value="./images/" placeholder="Pasta">
+                    <button class="btn btn-primary" type="button" onclick="addImage()">
+                        <i class="fas fa-plus"></i> Incluir imagem
+                    </button>
+                    <button class="btn btn-secondary" type="button" onclick="resetImageList()">
+                        <i class="fas fa-rotate-left"></i> Restaurar lista padrao
+                    </button>
+                </div>
+            </div>
+
+            <div class="images-grid" id="imagesGrid">
+                <!-- Images will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Tab Content: Suppliers -->
+        <div class="tab-content" id="tabSuppliers">
+            <div class="admin-actions">
+                <h3>Gerenciar Logos dos Fornecedores</h3>
+                <p style="color: #666; margin-bottom: 1.5rem;">Use imagens PNG ou JPG com fundo transparente para melhor resultado.</p>
+            </div>
+
+            <div class="suppliers-admin-grid" id="suppliersGrid">
+                <!-- Supplier cards will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Tab Content: Trends -->
+        <div class="tab-content" id="tabTrends">
+            <div class="admin-actions">
+                <h3>Cores Predominantes do Ano</h3>
+                <p style="color: #666; margin-bottom: 1rem;">Configure os flyers com nome da tinta, fabricante e cor destaque.</p>
+                <button class="btn btn-primary" type="button" onclick="addTrend()">
+                    <i class="fas fa-plus"></i> Adicionar cor tendencia
+                </button>
+            </div>
+
+            <div class="trends-admin-grid" id="trendsGrid">
+                <!-- Trend cards will be loaded dynamically -->
+            </div>
         </div>
     </div>
 
@@ -669,6 +852,295 @@
             setTimeout(() => {
                 message.classList.remove('show');
             }, 3000);
+        }
+
+        // ============ TAB MANAGEMENT ============
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.tab-btn').classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if (tabName === 'images') {
+                document.getElementById('tabImages').classList.add('active');
+            } else if (tabName === 'suppliers') {
+                document.getElementById('tabSuppliers').classList.add('active');
+                loadSuppliers();
+            } else if (tabName === 'trends') {
+                document.getElementById('tabTrends').classList.add('active');
+                loadTrends();
+            }
+        }
+
+        // ============ SUPPLIERS MANAGEMENT ============
+        const defaultSuppliers = [
+            { id: 1, name: 'Fornecedor 1', description: 'Substitua pelo seu fornecedor principal.', logo: './images/fornecedor-1-logo.png' },
+            { id: 2, name: 'Fornecedor 2', description: 'Inclua a marca e linha de tintas.', logo: './images/fornecedor-2-logo.png' },
+            { id: 3, name: 'Fornecedor 3', description: 'Espaco para logo e nome da marca.', logo: './images/fornecedor-3-logo.png' },
+            { id: 4, name: 'Fornecedor 4', description: 'Adicione outra marca relevante.', logo: './images/fornecedor-4-logo.png' }
+        ];
+
+        let suppliers = loadStoredSuppliers();
+
+        function loadStoredSuppliers() {
+            const stored = localStorage.getItem('adminSuppliers');
+            if (!stored) {
+                return [...defaultSuppliers];
+            }
+            try {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) {
+                    return parsed;
+                }
+            } catch (error) {
+                console.warn('Falha ao ler fornecedores, usando padrao.', error);
+            }
+            return [...defaultSuppliers];
+        }
+
+        function persistSuppliers() {
+            localStorage.setItem('adminSuppliers', JSON.stringify(suppliers));
+        }
+
+        function loadSuppliers() {
+            const grid = document.getElementById('suppliersGrid');
+            grid.innerHTML = '';
+
+            suppliers.forEach((supplier, index) => {
+                const card = createSupplierCard(supplier, index);
+                grid.appendChild(card);
+            });
+        }
+
+        function createSupplierCard(supplier, index) {
+            const card = document.createElement('div');
+            card.className = 'supplier-admin-card';
+            card.innerHTML = `
+                <h4>Fornecedor ${supplier.id}</h4>
+                <div class="supplier-logo-preview">
+                    <img src="${supplier.logo}" alt="${supplier.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <i class="fas fa-image" style="display: none;"></i>
+                </div>
+                <div class="control-group">
+                    <label>Nome:</label>
+                    <input type="text" value="${supplier.name}" onchange="updateSupplier(${index}, 'name', this.value)">
+                </div>
+                <div class="control-group">
+                    <label>Descricao:</label>
+                    <input type="text" value="${supplier.description}" onchange="updateSupplier(${index}, 'description', this.value)">
+                </div>
+                <div class="control-group">
+                    <label>Logo (caminho):</label>
+                    <input type="text" value="${supplier.logo}" onchange="updateSupplier(${index}, 'logo', this.value)">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="saveSupplier(${index})">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                </div>
+            `;
+            return card;
+        }
+
+        function updateSupplier(index, field, value) {
+            if (suppliers[index]) {
+                suppliers[index][field] = value;
+            }
+        }
+
+        function saveSupplier(index) {
+            persistSuppliers();
+            showSuccess();
+            loadSuppliers();
+        }
+
+        // ============ TRENDS MANAGEMENT ============
+        const defaultTrends = [
+            { name: 'Areia Serena', brand: 'Fabricante: Seu fornecedor', note: 'Tonalidade quente e elegante para salas.', color: '#d6c3a5', logo: './images/fornecedor-1-logo.png' },
+            { name: 'Ceu Urbano', brand: 'Fabricante: Seu fornecedor', note: 'Azul suave para ambientes de descanso.', color: '#9fb1c9', logo: './images/fornecedor-2-logo.png' },
+            { name: 'Terracota Moderna', brand: 'Fabricante: Seu fornecedor', note: 'Destaque acolhedor para paredes principais.', color: '#cbb7a1', logo: './images/fornecedor-3-logo.png' },
+            { name: 'Verde Grafite', brand: 'Fabricante: Seu fornecedor', note: 'Tonalidade profunda para ambientes sofisticados.', color: '#6c7a73', logo: './images/fornecedor-4-logo.png' }
+        ];
+
+        let trends = loadStoredTrends();
+
+        function loadStoredTrends() {
+            const stored = localStorage.getItem('adminTrends');
+            if (!stored) {
+                return [...defaultTrends];
+            }
+            try {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) {
+                    return parsed;
+                }
+            } catch (error) {
+                console.warn('Falha ao ler tendencias, usando padrao.', error);
+            }
+            return [...defaultTrends];
+        }
+
+        function persistTrends() {
+            localStorage.setItem('adminTrends', JSON.stringify(trends));
+        }
+
+        function loadTrends() {
+            const grid = document.getElementById('trendsGrid');
+            grid.innerHTML = '';
+
+            trends.forEach((trend, index) => {
+                const card = createTrendCard(trend, index);
+                grid.appendChild(card);
+            });
+        }
+
+        function createTrendCard(trend, index) {
+            const card = document.createElement('div');
+            card.className = 'trend-admin-card';
+            card.innerHTML = `
+                <div class="trend-color-preview" style="background: ${trend.color};"></div>
+                <div class="control-group">
+                    <label>Nome da tinta:</label>
+                    <input type="text" value="${trend.name}" onchange="updateTrend(${index}, 'name', this.value)">
+                </div>
+                <div class="control-group">
+                    <label>Fabricante:</label>
+                    <input type="text" value="${trend.brand}" onchange="updateTrend(${index}, 'brand', this.value)">
+                </div>
+                <div class="control-group">
+                    <label>Nota descritiva:</label>
+                    <textarea onchange="updateTrend(${index}, 'note', this.value)">${trend.note}</textarea>
+                </div>
+                <div class="control-group">
+                    <label>Cor (hex):</label>
+                    <input type="color" value="${trend.color}" onchange="updateTrend(${index}, 'color', this.value); this.parentElement.parentElement.querySelector('.trend-color-preview').style.background = this.value;">
+                </div>
+                <div class="control-group">
+                    <label>Logo fornecedor (caminho):</label>
+                    <input type="text" value="${trend.logo}" onchange="updateTrend(${index}, 'logo', this.value)">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="saveTrend(${index})">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteTrend(${index})">
+                        <i class="fas fa-trash"></i> Excluir
+                    </button>
+                </div>
+            `;
+            return card;
+        }
+
+        function updateTrend(index, field, value) {
+            if (trends[index]) {
+                trends[index][field] = value;
+            }
+        }
+
+        function saveTrend(index) {
+            persistTrends();
+            showSuccess();
+            loadTrends();
+        }
+
+        function deleteTrend(index) {
+            if (!trends[index]) {
+                return;
+            }
+
+            const confirmDelete = confirm(`Excluir cor "${trends[index].name}"?`);
+            if (!confirmDelete) {
+                return;
+            }
+
+            trends.splice(index, 1);
+            persistTrends();
+            loadTrends();
+        }
+
+        function addTrend() {
+            trends.push({
+                name: 'Nova Cor',
+                brand: 'Fabricante:',
+                note: 'Descricao da cor.',
+                color: '#cccccc',
+                logo: './images/fornecedor-1-logo.png'
+            });
+            persistTrends();
+            loadTrends();
+        }
+
+        // ============ EXPORT/IMPORT CONFIGURATION ============
+        function exportConfig() {
+            const config = {
+                version: '1.0',
+                exportDate: new Date().toISOString(),
+                images: siteImages,
+                suppliers: suppliers,
+                trends: trends
+            };
+
+            const dataStr = JSON.stringify(config, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `painter-config-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            showSuccess();
+        }
+
+        function importConfig(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const config = JSON.parse(e.target.result);
+                    
+                    if (config.images && Array.isArray(config.images)) {
+                        siteImages = config.images;
+                        persistImages();
+                    }
+                    
+                    if (config.suppliers && Array.isArray(config.suppliers)) {
+                        suppliers = config.suppliers;
+                        persistSuppliers();
+                    }
+                    
+                    if (config.trends && Array.isArray(config.trends)) {
+                        trends = config.trends;
+                        persistTrends();
+                    }
+                    
+                    // Reload current tab
+                    const activeTab = document.querySelector('.tab-btn.active');
+                    if (activeTab) {
+                        const tabName = activeTab.textContent.includes('Imagens') ? 'images' : 
+                                       activeTab.textContent.includes('Fornecedores') ? 'suppliers' : 'trends';
+                        if (tabName === 'images') loadImages();
+                        else if (tabName === 'suppliers') loadSuppliers();
+                        else if (tabName === 'trends') loadTrends();
+                    }
+                    
+                    alert('Configurações importadas com sucesso!');
+                    showSuccess();
+                } catch (error) {
+                    alert('Erro ao importar configurações: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset input
+            event.target.value = '';
         }
     </script>
 </body>
