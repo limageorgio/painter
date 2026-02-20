@@ -267,6 +267,46 @@
             transform: translateY(-2px);
         }
 
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .admin-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .add-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .add-form input {
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            min-width: 180px;
+            flex: 1 1 180px;
+        }
+
+        .add-form input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
         .success-message {
             position: fixed;
             top: 20px;
@@ -339,6 +379,17 @@
             </button>
         </div>
 
+        <div class="admin-actions">
+            <div class="add-form">
+                <input type="text" id="newImageName" placeholder="Nome da imagem">
+                <input type="text" id="newImageFile" placeholder="Arquivo (ex: nova.jpg)">
+                <input type="text" id="newImagePath" value="./images/" placeholder="Pasta">
+                <button class="btn btn-primary" type="button" onclick="addImage()">
+                    <i class="fas fa-plus"></i> Incluir imagem
+                </button>
+            </div>
+        </div>
+
         <div class="images-grid" id="imagesGrid">
             <!-- Images will be loaded dynamically -->
         </div>
@@ -353,13 +404,40 @@
         const ADMIN_PASSWORD = 'admin123'; // Altere para sua senha
 
         // Lista de imagens do site
-        const siteImages = [
+        const defaultImages = [
             { name: 'Hero - Principal', file: 'hero-painter.jpg', path: './images/' },
+            { name: 'Hero - Pintor Pintando', file: 'hero-pintor-pintando.jpg', path: './images/' },
+            { name: 'Hero - Ambiente Transformado', file: 'hero-ambiente-transformado.jpg', path: './images/' },
+            { name: 'Hero - Pintor Detalhe', file: 'hero-pintor-detalhe.jpg', path: './images/' },
+            { name: 'Hero - Parede Destaque', file: 'hero-parede-destaque.jpg', path: './images/' },
             { name: 'Portfolio - Sala Moderna', file: 'portfolio-sala-modern.jpg', path: './images/' },
             { name: 'Portfolio - Fachada', file: 'portfolio-fachada.jpg', path: './images/' },
             { name: 'Portfolio - Quarto', file: 'portfolio-quarto.jpg', path: './images/' },
             { name: 'Sobre - Pintor', file: 'about-pintor.jpg', path: './images/' },
+            { name: 'Modelo Layout', file: 'modelo layout.jpg', path: './images/' },
         ];
+
+        let siteImages = loadStoredImages();
+
+        function loadStoredImages() {
+            const stored = localStorage.getItem('adminImages');
+            if (!stored) {
+                return [...defaultImages];
+            }
+            try {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) {
+                    return parsed;
+                }
+            } catch (error) {
+                console.warn('Falha ao ler imagens salvas, usando padrao.', error);
+            }
+            return [...defaultImages];
+        }
+
+        function persistImages() {
+            localStorage.setItem('adminImages', JSON.stringify(siteImages));
+        }
 
         // Login
         document.getElementById('loginForm').addEventListener('submit', (e) => {
@@ -397,13 +475,17 @@
         }
 
         // Create Image Card
+        function buildImageSrc(img) {
+            return encodeURI(`${img.path}${img.file}`);
+        }
+
         function createImageCard(img, index) {
             const card = document.createElement('div');
             card.className = 'image-card';
             card.innerHTML = `
                 <h3>${img.name}</h3>
                 <div class="image-preview" id="preview-${index}">
-                    <img src="${img.path}${img.file}" alt="${img.name}" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-image\\'></i>'">
+                    <img src="${buildImageSrc(img)}" alt="${img.name}" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-image\\'></i>'">
                 </div>
                 <div class="image-controls">
                     <div class="control-group">
@@ -437,10 +519,51 @@
                         <button class="btn btn-secondary" onclick="resetFilters(${index})">
                             <i class="fas fa-undo"></i> Resetar
                         </button>
+                        <button class="btn btn-danger" onclick="deleteImage(${index})">
+                            <i class="fas fa-trash"></i> Excluir
+                        </button>
                     </div>
                 </div>
             `;
             return card;
+        }
+
+        function addImage() {
+            const nameInput = document.getElementById('newImageName');
+            const fileInput = document.getElementById('newImageFile');
+            const pathInput = document.getElementById('newImagePath');
+
+            const name = nameInput.value.trim();
+            const file = fileInput.value.trim();
+            const path = pathInput.value.trim() || './images/';
+
+            if (!name || !file) {
+                alert('Informe o nome e o arquivo da imagem.');
+                return;
+            }
+
+            siteImages.push({ name, file, path });
+            persistImages();
+            loadImages();
+
+            nameInput.value = '';
+            fileInput.value = '';
+            pathInput.value = './images/';
+        }
+
+        function deleteImage(index) {
+            if (!siteImages[index]) {
+                return;
+            }
+
+            const confirmDelete = confirm(`Excluir "${siteImages[index].name}" do gerenciador?`);
+            if (!confirmDelete) {
+                return;
+            }
+
+            siteImages.splice(index, 1);
+            persistImages();
+            loadImages();
         }
 
         // Preview Image
