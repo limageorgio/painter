@@ -189,11 +189,19 @@ function initPaletteFilter() {
     }
 
     const applyFilter = (floorTone) => {
+        const selectedProfile = window.currentProfile || 'all';
+        
         paletteCards.forEach(card => {
             const tones = (card.dataset.floor || '').split(' ');
-            const shouldShow = floorTone === 'all' || tones.includes(floorTone);
+            const cardProfile = (card.dataset.profile || '').toLowerCase();
+            
+            const matchesFloor = floorTone === 'all' || tones.includes(floorTone);
+            const matchesProfile = selectedProfile === 'all' || cardProfile === selectedProfile;
+            
+            const shouldShow = matchesFloor && matchesProfile;
             card.classList.toggle('is-hidden', !shouldShow);
         });
+        
         window.currentFloorType = floorTone;
         document.dispatchEvent(new CustomEvent('floorTypeChange', { detail: { floorType: floorTone } }));
     };
@@ -208,6 +216,46 @@ function initPaletteFilter() {
             button.classList.add('is-active');
             button.setAttribute('aria-pressed', 'true');
             applyFilter(button.dataset.floor || 'all');
+        });
+    });
+}
+
+function initProfileFilter() {
+    const profileChips = document.querySelectorAll('.profile-chip');
+    const paletteCards = document.querySelectorAll('.palette-card');
+
+    if (!profileChips.length || !paletteCards.length) {
+        return;
+    }
+
+    const applyProfileFilter = (profile) => {
+        const selectedFloor = window.currentFloorType || 'all';
+        
+        paletteCards.forEach(card => {
+            const tones = (card.dataset.floor || '').split(' ');
+            const cardProfile = (card.dataset.profile || '').toLowerCase();
+            
+            const matchesFloor = selectedFloor === 'all' || tones.includes(selectedFloor);
+            const matchesProfile = profile === 'all' || cardProfile === profile;
+            
+            const shouldShow = matchesFloor && matchesProfile;
+            card.classList.toggle('is-hidden', !shouldShow);
+        });
+        
+        window.currentProfile = profile;
+        document.dispatchEvent(new CustomEvent('profileChange', { detail: { profile: profile } }));
+    };
+
+    profileChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            profileChips.forEach(c => {
+                c.classList.remove('is-active');
+                c.setAttribute('aria-pressed', 'false');
+            });
+
+            chip.classList.add('is-active');
+            chip.setAttribute('aria-pressed', 'true');
+            applyProfileFilter(chip.dataset.profile || 'all');
         });
     });
 }
@@ -1082,6 +1130,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Carregar trends from admin
     loadAndRenderTrends();
+
+    // Inicializar estados de filtro
+    window.currentFloorType = 'all';
+    window.currentProfile = 'all';
+
+    // Inicializar filtro de perfil do ambiente
+    initProfileFilter();
 
     // Inicializar filtro de paletas por tom do piso
     initPaletteFilter();

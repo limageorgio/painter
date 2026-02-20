@@ -470,11 +470,12 @@
 
             <div class="palettes-intro">
                 <p>Escolha pelo perfil do ambiente: calmo, elegante, moderno ou ousado. Cada paleta tem 3 tons pensados para parede principal, apoio e destaque.</p>
-                <div class="palette-profiles">
-                    <span class="profile-chip">Calmo</span>
-                    <span class="profile-chip">Elegante</span>
-                    <span class="profile-chip">Moderno</span>
-                    <span class="profile-chip">Ousado</span>
+                <div class="palette-profiles" role="group" aria-label="Filtro por perfil do ambiente">
+                    <button type="button" class="profile-chip is-active" data-profile="all" aria-pressed="true">Todos</button>
+                    <button type="button" class="profile-chip" data-profile="calmo" aria-pressed="false">Calmo</button>
+                    <button type="button" class="profile-chip" data-profile="elegante" aria-pressed="false">Elegante</button>
+                    <button type="button" class="profile-chip" data-profile="moderno" aria-pressed="false">Moderno</button>
+                    <button type="button" class="profile-chip" data-profile="ousado" aria-pressed="false">Ousado</button>
                 </div>
             </div>
 
@@ -509,7 +510,7 @@
                 </button>
                 <div class="palette-accordion-panel" hidden>
                     <div class="palettes-grid">
-                    <div class="palette-card" data-floor="claro medio madeira-clara carvalho pedra-clara marmore-claro porcelanato-acetinado">
+                    <div class="palette-card" data-floor="claro medio madeira-clara carvalho pedra-clara marmore-claro porcelanato-acetinado" data-profile="calmo">
                         <div class="palette-name">Warm White Classic</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Calmo</span>
@@ -531,7 +532,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="claro medio madeira-clara carvalho concreto-claro cimento-queimado porcelanato-acetinado">
+                    <div class="palette-card" data-floor="claro medio madeira-clara carvalho concreto-claro cimento-queimado porcelanato-acetinado" data-profile="elegante">
                         <div class="palette-name">Soft Greige</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Elegante</span>
@@ -553,7 +554,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="claro cinza concreto-claro pedra-clara marmore-claro cimento-queimado">
+                    <div class="palette-card" data-floor="claro cinza concreto-claro pedra-clara marmore-claro cimento-queimado" data-profile="moderno">
                         <div class="palette-name">Cool Off-White</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Moderno</span>
@@ -575,7 +576,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="claro medio madeira-clara madeira-media carvalho porcelanato-acetinado">
+                    <div class="palette-card" data-floor="claro medio madeira-clara madeira-media carvalho porcelanato-acetinado" data-profile="calmo">
                         <div class="palette-name">Linen Beige</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Calmo</span>
@@ -608,7 +609,7 @@
                 </button>
                 <div class="palette-accordion-panel" hidden>
                     <div class="palettes-grid">
-                    <div class="palette-card" data-floor="medio escuro madeira-media madeira-escura pedra-escura nogueira">
+                    <div class="palette-card" data-floor="medio escuro madeira-media madeira-escura pedra-escura nogueira" data-profile="elegante">
                         <div class="palette-name">Earthy Clay</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Elegante</span>
@@ -630,7 +631,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="medio escuro madeira-media madeira-escura nogueira">
+                    <div class="palette-card" data-floor="medio escuro madeira-media madeira-escura nogueira" data-profile="calmo">
                         <div class="palette-name">Sage Retreat</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Calmo</span>
@@ -652,7 +653,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="claro medio madeira-clara pedra-clara marmore-claro porcelanato-acetinado">
+                    <div class="palette-card" data-floor="claro medio madeira-clara pedra-clara marmore-claro porcelanato-acetinado" data-profile="calmo">
                         <div class="palette-name">Desert Sand</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Calmo</span>
@@ -674,7 +675,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="medio escuro madeira-media madeira-escura pedra-escura nogueira">
+                    <div class="palette-card" data-floor="medio escuro madeira-media madeira-escura pedra-escura nogueira" data-profile="elegante">
                         <div class="palette-name">Olive Grove</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Elegante</span>
@@ -707,7 +708,7 @@
                 </button>
                 <div class="palette-accordion-panel" hidden>
                     <div class="palettes-grid">
-                    <div class="palette-card" data-floor="claro medio madeira-clara pedra-clara concreto-claro marmore-claro porcelanato-acetinado">
+                    <div class="palette-card" data-floor="claro medio madeira-clara pedra-clara concreto-claro marmore-claro porcelanato-acetinado" data-profile="calmo">
                         <div class="palette-name">Coastal Breeze</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Calmo</span>
@@ -729,7 +730,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="medio escuro madeira-media madeira-escura concreto-escuro cimento-queimado nogueira">
+                    <div class="palette-card" data-floor="medio escuro madeira-media madeira-escura concreto-escuro cimento-queimado nogueira" data-profile="elegante">
                         <div class="palette-name">Harbor Blue</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Elegante</span>
@@ -751,7 +752,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="claro medio madeira-clara pedra-clara marmore-claro porcelanato-acetinado">
+                    <div class="palette-card" data-floor="claro medio madeira-clara pedra-clara marmore-claro porcelanato-acetinado" data-profile="calmo">
                         <div class="palette-name">Sea Glass</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Calmo</span>
@@ -773,7 +774,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="medio cinza concreto-claro pedra-clara cimento-queimado">
+                    <div class="palette-card" data-floor="medio cinza concreto-claro pedra-clara cimento-queimado" data-profile="moderno">
                         <div class="palette-name">Cape Cod Gray</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Moderno</span>
@@ -806,7 +807,7 @@
                 </button>
                 <div class="palette-accordion-panel" hidden>
                     <div class="palettes-grid">
-                    <div class="palette-card" data-floor="medio escuro madeira-escura concreto-escuro pedra-escura nogueira cimento-queimado">
+                    <div class="palette-card" data-floor="medio escuro madeira-escura concreto-escuro pedra-escura nogueira cimento-queimado" data-profile="elegante">
                         <div class="palette-name">Colonial Brick</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Elegante</span>
@@ -828,7 +829,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="medio madeira-media carvalho porcelanato-acetinado">
+                    <div class="palette-card" data-floor="medio madeira-media carvalho porcelanato-acetinado" data-profile="elegante">
                         <div class="palette-name">Craftsman Warmth</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Elegante</span>
@@ -850,7 +851,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="medio escuro madeira-escura pedra-escura nogueira">
+                    <div class="palette-card" data-floor="medio escuro madeira-escura pedra-escura nogueira" data-profile="elegante">
                         <div class="palette-name">Traditional Navy</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Elegante</span>
@@ -872,7 +873,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="claro medio concreto-claro pedra-clara marmore-claro porcelanato-acetinado">
+                    <div class="palette-card" data-floor="claro medio concreto-claro pedra-clara marmore-claro porcelanato-acetinado" data-profile="calmo">
                         <div class="palette-name">Historic Cream</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Calmo</span>
@@ -905,7 +906,7 @@
                 </button>
                 <div class="palette-accordion-panel" hidden>
                     <div class="palettes-grid">
-                    <div class="palette-card" data-floor="claro cinza concreto-claro pedra-clara marmore-claro cimento-queimado">
+                    <div class="palette-card" data-floor="claro cinza concreto-claro pedra-clara marmore-claro cimento-queimado" data-profile="moderno">
                         <div class="palette-name">Urban Minimal</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Moderno</span>
@@ -927,7 +928,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="medio cinza concreto-escuro pedra-escura cimento-queimado">
+                    <div class="palette-card" data-floor="medio cinza concreto-escuro pedra-escura cimento-queimado" data-profile="moderno">
                         <div class="palette-name">Concrete Loft</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Moderno</span>
@@ -949,7 +950,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="escuro cinza concreto-escuro pedra-escura cimento-queimado">
+                    <div class="palette-card" data-floor="escuro cinza concreto-escuro pedra-escura cimento-queimado" data-profile="ousado">
                         <div class="palette-name">Charcoal Contrast</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Ousado</span>
@@ -971,7 +972,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="escuro cinza concreto-escuro pedra-escura cimento-queimado">
+                    <div class="palette-card" data-floor="escuro cinza concreto-escuro pedra-escura cimento-queimado" data-profile="ousado">
                         <div class="palette-name">Black Accent</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Ousado</span>
@@ -1004,7 +1005,7 @@
                 </button>
                 <div class="palette-accordion-panel" hidden>
                     <div class="palettes-grid">
-                    <div class="palette-card" data-floor="medio escuro madeira-media madeira-escura nogueira">
+                    <div class="palette-card" data-floor="medio escuro madeira-media madeira-escura nogueira" data-profile="ousado">
                         <div class="palette-name">Moody Green</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Ousado</span>
@@ -1026,7 +1027,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="medio escuro madeira-escura concreto-escuro cimento-queimado nogueira">
+                    <div class="palette-card" data-floor="medio escuro madeira-escura concreto-escuro cimento-queimado nogueira" data-profile="ousado">
                         <div class="palette-name">Deep Teal</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Ousado</span>
@@ -1048,7 +1049,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="medio escuro madeira-media madeira-escura nogueira">
+                    <div class="palette-card" data-floor="medio escuro madeira-media madeira-escura nogueira" data-profile="ousado">
                         <div class="palette-name">Rust Luxe</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Ousado</span>
@@ -1070,7 +1071,7 @@
                         </div>
                     </div>
 
-                    <div class="palette-card" data-floor="medio escuro madeira-escura pedra-escura nogueira">
+                    <div class="palette-card" data-floor="medio escuro madeira-escura pedra-escura nogueira" data-profile="ousado">
                         <div class="palette-name">Burgundy Studio</div>
                         <div class="palette-tags">
                             <span class="tag">Perfil: Ousado</span>
