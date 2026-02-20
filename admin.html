@@ -387,6 +387,9 @@
                 <button class="btn btn-primary" type="button" onclick="addImage()">
                     <i class="fas fa-plus"></i> Incluir imagem
                 </button>
+                <button class="btn btn-secondary" type="button" onclick="resetImageList()">
+                    <i class="fas fa-rotate-left"></i> Restaurar lista padrao
+                </button>
             </div>
         </div>
 
@@ -562,6 +565,17 @@
             }
 
             siteImages.splice(index, 1);
+            persistImages();
+            loadImages();
+        }
+
+        function resetImageList() {
+            const confirmReset = confirm('Restaurar a lista padrao de imagens? Isso remove inclusoes manuais.');
+            if (!confirmReset) {
+                return;
+            }
+
+            siteImages = [...defaultImages];
             persistImages();
             loadImages();
         }
