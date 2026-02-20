@@ -409,6 +409,18 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
+        .flyer-preview-container {
+            width: 100%;
+            min-height: 240px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
         .trend-color-preview {
             width: 100%;
             height: 100px;
@@ -569,10 +581,7 @@
         <div class="tab-content" id="tabTrends">
             <div class="admin-actions">
                 <h3>Cores Predominantes do Ano</h3>
-                <p style="color: #666; margin-bottom: 1rem;">Configure os flyers com nome da tinta, fabricante e cor destaque.</p>
-                <button class="btn btn-primary" type="button" onclick="addTrend()">
-                    <i class="fas fa-plus"></i> Adicionar cor tendencia
-                </button>
+                <p style="color: #666; margin-bottom: 1rem;">Carregue flyers JPG ou PNG com as tendências de cores divulgadas pelos fornecedores.</p>
             </div>
 
             <div class="trends-admin-grid" id="trendsGrid">
@@ -958,10 +967,10 @@
 
         // ============ TRENDS MANAGEMENT ============
         const defaultTrends = [
-            { name: 'Areia Serena', brand: 'Fabricante: Seu fornecedor', note: 'Tonalidade quente e elegante para salas.', color: '#d6c3a5', logo: './images/fornecedor-1-logo.png' },
-            { name: 'Ceu Urbano', brand: 'Fabricante: Seu fornecedor', note: 'Azul suave para ambientes de descanso.', color: '#9fb1c9', logo: './images/fornecedor-2-logo.png' },
-            { name: 'Terracota Moderna', brand: 'Fabricante: Seu fornecedor', note: 'Destaque acolhedor para paredes principais.', color: '#cbb7a1', logo: './images/fornecedor-3-logo.png' },
-            { name: 'Verde Grafite', brand: 'Fabricante: Seu fornecedor', note: 'Tonalidade profunda para ambientes sofisticados.', color: '#6c7a73', logo: './images/fornecedor-4-logo.png' }
+            { supplierId: 1, supplierName: 'Fornecedor 1', flyer: '', percentage: 0 },
+            { supplierId: 2, supplierName: 'Fornecedor 2', flyer: '', percentage: 0 },
+            { supplierId: 3, supplierName: 'Fornecedor 3', flyer: '', percentage: 0 },
+            { supplierId: 4, supplierName: 'Fornecedor 4', flyer: '', percentage: 0 }
         ];
 
         let trends = loadStoredTrends();
@@ -974,7 +983,11 @@
             try {
                 const parsed = JSON.parse(stored);
                 if (Array.isArray(parsed)) {
-                    return parsed;
+                    // Garantir que trends antigos tenham o campo percentage
+                    return parsed.map(trend => ({
+                        ...trend,
+                        percentage: trend.percentage !== undefined ? trend.percentage : 0
+                    }));
                 }
             } catch (error) {
                 console.warn('Falha ao ler tendencias, usando padrao.', error);
@@ -999,43 +1012,37 @@
         function createTrendCard(trend, index) {
             const card = document.createElement('div');
             card.className = 'trend-admin-card';
+            const flyerPreview = trend.flyer ? `<img src="${trend.flyer}" alt="Flyer do fornecedor" style="width: auto; height: auto; max-width: 100%; max-height: 240px; object-fit: contain; border-radius: 8px; display: block; margin: 0 auto;">` : `<div style="width: 100%; height: 240px; border: 2px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #999;"><i class="fas fa-image" style="font-size: 3rem;"></i></div>`;
+            
             card.innerHTML = `
-                <div class="trend-color-preview" style="background: ${trend.color};"></div>
-                <div class="control-group">
-                    <label>Nome da tinta:</label>
-                    <input type="text" value="${trend.name}" onchange="updateTrend(${index}, 'name', this.value)">
+                <h4>${trend.supplierName}</h4>
+                <div class="flyer-preview-container">
+                    ${flyerPreview}
                 </div>
                 <div class="control-group">
-                    <label>Fabricante:</label>
-                    <input type="text" value="${trend.brand}" onchange="updateTrend(${index}, 'brand', this.value)">
+                    <label>Carregar Flyer (JPG/PNG):</label>
+                    <input type="file" accept="image/jpeg,image/png" onchange="handleFlyerUpload(event, ${index})" style="padding: 8px; border: 2px dashed #667eea; border-radius: 8px; cursor: pointer;">
                 </div>
                 <div class="control-group">
-                    <label>Nota descritiva:</label>
-                    <textarea onchange="updateTrend(${index}, 'note', this.value)">${trend.note}</textarea>
-                </div>
-                <div class="control-group">
-                    <label>Cor (hex):</label>
-                    <input type="color" value="${trend.color}" onchange="updateTrend(${index}, 'color', this.value); this.parentElement.parentElement.querySelector('.trend-color-preview').style.background = this.value;">
-                </div>
-                <div class="control-group">
-                    <label>Logo fornecedor (caminho):</label>
-                    <input type="text" value="${trend.logo}" onchange="updateTrend(${index}, 'logo', this.value)">
+                    <label>Percentual de preferência (%): <span id="percent-${index}">${trend.percentage || 0}</span>%</label>
+                    <input type="range" min="0" max="100" value="${trend.percentage || 0}" onchange="updateTrendPercentage(${index}, this.value); document.getElementById('percent-${index}').textContent = this.value;" style="width: 100%;">
+                    <small style="color: #666;">Indicador visual de tendência para a página</small>
                 </div>
                 <div class="btn-group">
                     <button class="btn btn-primary" onclick="saveTrend(${index})">
                         <i class="fas fa-save"></i> Salvar
                     </button>
-                    <button class="btn btn-danger" onclick="deleteTrend(${index})">
-                        <i class="fas fa-trash"></i> Excluir
+                    <button class="btn btn-danger" onclick="clearFlyerTrend(${index})">
+                        <i class="fas fa-times"></i> Limpar
                     </button>
                 </div>
             `;
             return card;
         }
 
-        function updateTrend(index, field, value) {
+        function updateTrendPercentage(index, percentage) {
             if (trends[index]) {
-                trends[index][field] = value;
+                trends[index].percentage = parseInt(percentage);
             }
         }
 
@@ -1045,29 +1052,27 @@
             loadTrends();
         }
 
-        function deleteTrend(index) {
-            if (!trends[index]) {
+        function handleFlyerUpload(event, index) {
+            const file = event.target.files[0];
+            if (!file) {
                 return;
             }
 
-            const confirmDelete = confirm(`Excluir cor "${trends[index].name}"?`);
-            if (!confirmDelete) {
-                return;
-            }
-
-            trends.splice(index, 1);
-            persistTrends();
-            loadTrends();
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                trends[index].flyer = e.target.result;
+                loadTrends();
+            };
+            reader.readAsDataURL(file);
         }
 
-        function addTrend() {
-            trends.push({
-                name: 'Nova Cor',
-                brand: 'Fabricante:',
-                note: 'Descricao da cor.',
-                color: '#cccccc',
-                logo: './images/fornecedor-1-logo.png'
-            });
+        function clearFlyerTrend(index) {
+            const confirmClear = confirm(`Limpar flyer do ${trends[index].supplierName}?`);
+            if (!confirmClear) {
+                return;
+            }
+
+            trends[index].flyer = '';
             persistTrends();
             loadTrends();
         }

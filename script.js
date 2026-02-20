@@ -947,12 +947,83 @@ const resetLiveTheme = () => {
     });
 };
 
+// Load trends from localStorage and render them on the page
+function loadAndRenderTrends() {
+    const trendsContainer = document.getElementById('trendsContainer');
+    if (!trendsContainer) {
+        return;
+    }
+
+    const stored = localStorage.getItem('adminTrends');
+    let trends = [];
+
+    if (stored) {
+        try {
+            trends = JSON.parse(stored);
+            // Garantir que trends antigos tenham o campo percentage
+            trends = trends.map(trend => ({
+                ...trend,
+                percentage: trend.percentage !== undefined ? trend.percentage : 0
+            }));
+        } catch (error) {
+            console.warn('Falha ao ler tendencias', error);
+        }
+    }
+
+    trendsContainer.innerHTML = '';
+
+    if (trends.length === 0) {
+        trendsContainer.innerHTML = '<p style="text-align: center; color: #999; grid-column: 1/-1;">Nenhuma tendência configurada ainda.</p>';
+        return;
+    }
+
+    // Contar quantos trends têm flyer
+    const trendsWithFlyer = trends.filter(t => t.flyer);
+    
+    // Definir grid dinamicamente baseado no número de items
+    let columns = 1;
+    if (trendsWithFlyer.length === 1) {
+        columns = 1;
+    } else if (trendsWithFlyer.length === 2) {
+        columns = 2;
+    } else if (trendsWithFlyer.length === 3) {
+        columns = 3;
+    } else {
+        columns = 4;
+    }
+    
+    // Aplicar grid-template-columns dinâmico
+    trendsContainer.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+
+    trends.forEach((trend) => {
+        if (!trend.flyer) {
+            return; // Skip if no flyer
+        }
+
+        const card = document.createElement('div');
+        card.className = 'trend-card';
+        const scale = (trend.percentage && trend.percentage > 0) ? (trend.percentage / 100) : 1;
+        card.innerHTML = `
+            <div class="trend-flyer-container">
+                <img src="${trend.flyer}" alt="${trend.supplierName}" class="trend-flyer-image" style="transform: scale(${scale});">
+            </div>
+            <div class="trend-label">
+                <span>${trend.supplierName}</span>
+            </div>
+        `;
+        trendsContainer.appendChild(card);
+    });
+}
+
 // Initialize page
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Pintura Profissional website loaded successfully');
     
     // Carregar dark mode preference
     loadDarkModePreference();
+
+    // Carregar trends from admin
+    loadAndRenderTrends();
 
     // Inicializar filtro de paletas por tom do piso
     initPaletteFilter();
