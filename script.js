@@ -1051,6 +1051,50 @@ function loadAndRenderHeroGallery() {
     });
 }
 
+function loadAndRenderSuppliers() {
+    const suppliersGrid = document.querySelector('.suppliers-grid');
+    if (!suppliersGrid) {
+        return;
+    }
+
+    const stored = localStorage.getItem('adminSuppliers');
+    let suppliers = [];
+
+    if (stored) {
+        try {
+            suppliers = JSON.parse(stored);
+        } catch (error) {
+            console.warn('Falha ao ler fornecedores do admin', error);
+            return; // Keep original suppliers if admin data is corrupted
+        }
+    }
+
+    if (suppliers.length === 0) {
+        return; // Keep original suppliers if no admin suppliers
+    }
+
+    suppliersGrid.innerHTML = '';
+
+    suppliers.forEach((supplier) => {
+        const card = document.createElement('div');
+        card.className = 'supplier-card';
+        
+        const logoHtml = supplier.logo ? 
+            `<img src="${supplier.logo}" alt="Logo do ${supplier.name}" onload="this.parentElement.classList.add('has-image')" onerror="this.remove()">` 
+            : '';
+        
+        card.innerHTML = `
+            <div class="supplier-logo">
+                ${logoHtml}
+                <i class="fas fa-image"></i>
+                <span>Logo do fornecedor</span>
+            </div>
+            <h3>${supplier.name}</h3>
+        `;
+        suppliersGrid.appendChild(card);
+    });
+}
+
 function loadAndRenderTrends() {
     const trendsContainer = document.getElementById('trendsContainer');
     if (!trendsContainer) {
@@ -1127,6 +1171,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Carregar imagens da galeria hero dari admin
     loadAndRenderHeroGallery();
+
+    // Carregar logos dos fornecedores do admin
+    loadAndRenderSuppliers();
 
     // Carregar trends from admin
     loadAndRenderTrends();

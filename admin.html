@@ -885,10 +885,10 @@
 
         // ============ SUPPLIERS MANAGEMENT ============
         const defaultSuppliers = [
-            { id: 1, name: 'Fornecedor 1', description: 'Substitua pelo seu fornecedor principal.', logo: './images/fornecedor-1-logo.png' },
-            { id: 2, name: 'Fornecedor 2', description: 'Inclua a marca e linha de tintas.', logo: './images/fornecedor-2-logo.png' },
-            { id: 3, name: 'Fornecedor 3', description: 'Espaco para logo e nome da marca.', logo: './images/fornecedor-3-logo.png' },
-            { id: 4, name: 'Fornecedor 4', description: 'Adicione outra marca relevante.', logo: './images/fornecedor-4-logo.png' }
+            { id: 1, name: 'Fornecedor 1', logo: '' },
+            { id: 2, name: 'Fornecedor 2', logo: '' },
+            { id: 3, name: 'Fornecedor 3', logo: '' },
+            { id: 4, name: 'Fornecedor 4', logo: '' }
         ];
 
         let suppliers = loadStoredSuppliers();
@@ -937,17 +937,19 @@
                     <input type="text" value="${supplier.name}" onchange="updateSupplier(${index}, 'name', this.value)">
                 </div>
                 <div class="control-group">
-                    <label>Descricao:</label>
-                    <input type="text" value="${supplier.description}" onchange="updateSupplier(${index}, 'description', this.value)">
-                </div>
-                <div class="control-group">
-                    <label>Logo (caminho):</label>
-                    <input type="text" value="${supplier.logo}" onchange="updateSupplier(${index}, 'logo', this.value)">
+                    <label>Carregar Logo (JPG ou PNG):</label>
+                    <input type="file" accept="image/jpeg,image/png" onchange="handleLogoUpload(event, ${index})" style="padding: 8px; border: 2px dashed #667eea; border-radius: 8px; cursor: pointer;">
+                    <small style="color: #666; margin-top: 0.5rem; display: block;">Selecione uma imagem JPG ou PNG com a logo do fornecedor</small>
                 </div>
                 <div class="btn-group">
                     <button class="btn btn-primary" onclick="saveSupplier(${index})">
                         <i class="fas fa-save"></i> Salvar
                     </button>
+                    ${supplier.logo && supplier.logo.startsWith('data:') ? `
+                    <button class="btn btn-danger" onclick="clearSupplierLogo(${index})">
+                        <i class="fas fa-times"></i> Limpar Logo
+                    </button>
+                    ` : ''}
                 </div>
             `;
             return card;
@@ -1075,6 +1077,31 @@
             trends[index].flyer = '';
             persistTrends();
             loadTrends();
+        }
+
+        function handleLogoUpload(event, index) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                suppliers[index].logo = e.target.result;
+                loadSuppliers();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearSupplierLogo(index) {
+            const confirmClear = confirm(`Limpar logo do ${suppliers[index].name}?`);
+            if (!confirmClear) {
+                return;
+            }
+
+            suppliers[index].logo = '';
+            persistSuppliers();
+            loadSuppliers();
         }
 
         // ============ EXPORT/IMPORT CONFIGURATION ============
