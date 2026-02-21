@@ -995,6 +995,39 @@ const resetLiveTheme = () => {
     });
 };
 
+function normalizePublicImageUrl(value) {
+    const raw = (value || '').trim();
+    if (!raw) {
+        return '';
+    }
+
+    if (/^(data:|blob:|file:)/i.test(raw)) {
+        return '';
+    }
+
+    if (/^[a-zA-Z]:[\\/]/.test(raw) || raw.includes('\\')) {
+        return '';
+    }
+
+    if (/^https?:\/\//i.test(raw)) {
+        return raw;
+    }
+
+    if (/^images\//i.test(raw)) {
+        return `./${raw}`;
+    }
+
+    if (/^(\/|\.\/)/.test(raw)) {
+        return raw;
+    }
+
+    if (/^[^\/\\]+$/.test(raw)) {
+        return `./images/${raw}`;
+    }
+
+    return '';
+}
+
 // Load trends from localStorage and render them on the page
 function loadAndRenderHeroGallery() {
     const gallery = document.querySelector('.hero-gallery-grid');
@@ -1039,7 +1072,11 @@ function loadAndRenderHeroGallery() {
     gallery.innerHTML = '';
 
     galleryImages.forEach((img, index) => {
-        const src = img.path ? `${img.path}${img.file}` : `./images/${img.file}`;
+        const candidate = img.src || (img.path && img.file ? `${img.path}${img.file}` : img.file || '');
+        const src = normalizePublicImageUrl(candidate);
+        if (!src) {
+            return;
+        }
         const item = document.createElement('div');
         item.className = `hero-gallery-item ${galleryClasses[index]}`;
         item.innerHTML = `
@@ -1078,9 +1115,9 @@ function loadAndRenderSuppliers() {
     suppliers.forEach((supplier) => {
         const card = document.createElement('div');
         card.className = 'supplier-card';
-        
-        const logoHtml = supplier.logo ? 
-            `<img src="${supplier.logo}" alt="Logo do ${supplier.name}" onload="this.parentElement.classList.add('has-image')" onerror="this.remove()">` 
+        const logoSrc = normalizePublicImageUrl(supplier.logo);
+        const logoHtml = logoSrc ? 
+            `<img src="${logoSrc}" alt="Logo do ${supplier.name}" onload="this.parentElement.classList.add('has-image')" onerror="this.remove()">` 
             : '';
         
         card.innerHTML = `
@@ -1143,7 +1180,8 @@ function loadAndRenderTrends() {
     trendsContainer.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
 
     trends.forEach((trend) => {
-        if (!trend.flyer) {
+        const flyerSrc = normalizePublicImageUrl(trend.flyer);
+        if (!flyerSrc) {
             return; // Skip if no flyer
         }
 
@@ -1152,7 +1190,7 @@ function loadAndRenderTrends() {
         const scale = (trend.percentage && trend.percentage > 0) ? (trend.percentage / 100) : 1;
         card.innerHTML = `
             <div class="trend-flyer-container">
-                <img src="${trend.flyer}" alt="${trend.supplierName}" class="trend-flyer-image" style="transform: scale(${scale});">
+                <img src="${flyerSrc}" alt="${trend.supplierName}" class="trend-flyer-image" style="transform: scale(${scale});">
             </div>
             <div class="trend-label">
                 <span>${trend.supplierName}</span>

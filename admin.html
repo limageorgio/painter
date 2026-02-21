@@ -549,8 +549,7 @@
             <div class="admin-actions">
                 <div class="add-form">
                     <input type="text" id="newImageName" placeholder="Nome da imagem">
-                    <input type="text" id="newImageFile" placeholder="Arquivo (ex: nova.jpg)">
-                    <input type="text" id="newImagePath" value="./images/" placeholder="Pasta">
+                    <input type="text" id="newImageUrl" placeholder="URL publica ou /images/nova.jpg">
                     <button class="btn btn-primary" type="button" onclick="addImage()">
                         <i class="fas fa-plus"></i> Incluir imagem
                     </button>
@@ -558,6 +557,7 @@
                         <i class="fas fa-rotate-left"></i> Restaurar lista padrao
                     </button>
                 </div>
+                <small style="color: #666; margin-top: 0.5rem; display: block;">Use apenas URLs publicas (https://) ou caminhos servidos pela pasta /images/ do site.</small>
             </div>
 
             <div class="images-grid" id="imagesGrid">
@@ -569,7 +569,7 @@
         <div class="tab-content" id="tabSuppliers">
             <div class="admin-actions">
                 <h3>Gerenciar Logos dos Fornecedores</h3>
-                <p style="color: #666; margin-bottom: 1.5rem;">Use imagens PNG ou JPG com fundo transparente para melhor resultado.</p>
+                <p style="color: #666; margin-bottom: 1.5rem;">Use URLs publicas (https://) ou arquivos da pasta /images/ do site. PNG com fundo transparente costuma funcionar melhor.</p>
             </div>
 
             <div class="suppliers-admin-grid" id="suppliersGrid">
@@ -581,7 +581,7 @@
         <div class="tab-content" id="tabTrends">
             <div class="admin-actions">
                 <h3>Cores Predominantes do Ano</h3>
-                <p style="color: #666; margin-bottom: 1rem;">Carregue flyers JPG ou PNG com as tendências de cores divulgadas pelos fornecedores.</p>
+                <p style="color: #666; margin-bottom: 1rem;">Use URLs publicas (https://) ou arquivos da pasta /images/ do site para os flyers.</p>
             </div>
 
             <div class="trends-admin-grid" id="trendsGrid">
@@ -612,7 +612,66 @@
             { name: 'Modelo Layout', file: 'modelo layout.jpg', path: './images/' },
         ];
 
+        const PUBLIC_IMAGE_PREFIXES = ['https://', 'http://', '/images/', './images/', 'images/'];
+
         let siteImages = loadStoredImages();
+
+        function normalizeImageUrl(value) {
+            const raw = (value || '').trim();
+            if (!raw) {
+                return '';
+            }
+
+            if (/^(data:|blob:|file:)/i.test(raw)) {
+                return '';
+            }
+
+            if (/^[a-zA-Z]:[\\/]/.test(raw) || raw.includes('\\')) {
+                return '';
+            }
+
+            if (PUBLIC_IMAGE_PREFIXES.some(prefix => raw.toLowerCase().startsWith(prefix))) {
+                return raw.startsWith('images/') ? `./${raw}` : raw;
+            }
+
+            if (/^[^\/\\]+$/.test(raw)) {
+                return `./images/${raw}`;
+            }
+
+            return '';
+        }
+
+        function getFilenameFromUrl(src) {
+            if (!src) {
+                return '';
+            }
+
+            try {
+                const url = new URL(src, window.location.href);
+                const parts = url.pathname.split('/').filter(Boolean);
+                return parts[parts.length - 1] || '';
+            } catch (error) {
+                const cleaned = src.split('?')[0].split('#')[0];
+                const parts = cleaned.split('/').filter(Boolean);
+                return parts[parts.length - 1] || '';
+            }
+        }
+
+        function sanitizeStoredImage(image) {
+            const candidate = image?.src || `${image?.path || ''}${image?.file || ''}`;
+            const normalized = normalizeImageUrl(candidate);
+
+            if (!normalized) {
+                return { ...image, src: '', file: '', path: '' };
+            }
+
+            return {
+                ...image,
+                src: normalized,
+                file: image?.file || getFilenameFromUrl(normalized),
+                path: image?.path || ''
+            };
+        }
 
         function loadStoredImages() {
             const stored = localStorage.getItem('adminImages');
@@ -622,7 +681,7 @@
             try {
                 const parsed = JSON.parse(stored);
                 if (Array.isArray(parsed)) {
-                    return parsed;
+                    return parsed.map(sanitizeStoredImage);
                 }
             } catch (error) {
                 console.warn('Falha ao ler imagens salvas, usando padrao.', error);
@@ -671,7 +730,8 @@
 
         // Create Image Card
         function buildImageSrc(img) {
-            return encodeURI(`${img.path}${img.file}`);
+            const normalized = normalizeImageUrl(img?.src || `${img?.path || ''}${img?.file || ''}`);
+            return encodeURI(normalized || '');
         }
 
         function createImageCard(img, index) {
@@ -684,8 +744,8 @@
                 </div>
                 <div class="image-controls">
                     <div class="control-group">
-                        <label>Substituir Imagem:</label>
-                        <input type="file" accept="image/*" onchange="previewImage(event, ${index})">
+                        <label>URL publica da imagem:</label>
+                        <input type="text" value="${buildImageSrc(img)}" placeholder="https://... ou /images/arquivo.jpg" onchange="updateImageUrl(${index}, this)">
                     </div>
                     <div class="control-group">
                         <label>Brilho:</label>
@@ -725,25 +785,23 @@
 
         function addImage() {
             const nameInput = document.getElementById('newImageName');
-            const fileInput = document.getElementById('newImageFile');
-            const pathInput = document.getElementById('newImagePath');
+            const urlInput = document.getElementById('newImageUrl');
 
             const name = nameInput.value.trim();
-            const file = fileInput.value.trim();
-            const path = pathInput.value.trim() || './images/';
+            const rawUrl = urlInput.value.trim();
+            const normalized = normalizeImageUrl(rawUrl);
 
-            if (!name || !file) {
-                alert('Informe o nome e o arquivo da imagem.');
+            if (!name || !normalized) {
+                alert('Informe o nome e uma URL publica (/images/ ou https://).');
                 return;
             }
 
-            siteImages.push({ name, file, path });
+            siteImages.push({ name, src: normalized, file: getFilenameFromUrl(normalized) || 'imagem.jpg', path: '' });
             persistImages();
             loadImages();
 
             nameInput.value = '';
-            fileInput.value = '';
-            pathInput.value = './images/';
+            urlInput.value = '';
         }
 
         function deleteImage(index) {
@@ -772,17 +830,26 @@
             loadImages();
         }
 
-        // Preview Image
-        function previewImage(event, index) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.getElementById(`preview-${index}`);
-                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-                    updateFilters(index);
-                }
-                reader.readAsDataURL(file);
+        function updateImageUrl(index, input) {
+            const normalized = normalizeImageUrl(input.value);
+            if (!normalized) {
+                alert('Use uma URL publica (https://) ou caminho em /images/.');
+                input.value = buildImageSrc(siteImages[index]);
+                return;
+            }
+
+            if (!siteImages[index]) {
+                return;
+            }
+
+            siteImages[index].src = normalized;
+            siteImages[index].file = getFilenameFromUrl(normalized) || siteImages[index].file || 'imagem.jpg';
+            siteImages[index].path = '';
+            persistImages();
+
+            const preview = document.querySelector(`#preview-${index} img`);
+            if (preview) {
+                preview.src = normalized;
             }
         }
 
@@ -846,7 +913,8 @@
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = siteImages[index].file;
+                const downloadName = siteImages[index]?.file || getFilenameFromUrl(buildImageSrc(siteImages[index])) || 'imagem.jpg';
+                a.download = downloadName;
                 a.click();
                 URL.revokeObjectURL(url);
 
@@ -901,7 +969,10 @@
             try {
                 const parsed = JSON.parse(stored);
                 if (Array.isArray(parsed)) {
-                    return parsed;
+                    return parsed.map(supplier => ({
+                        ...supplier,
+                        logo: normalizeImageUrl(supplier.logo)
+                    }));
                 }
             } catch (error) {
                 console.warn('Falha ao ler fornecedores, usando padrao.', error);
@@ -937,15 +1008,15 @@
                     <input type="text" value="${supplier.name}" onchange="updateSupplier(${index}, 'name', this.value)">
                 </div>
                 <div class="control-group">
-                    <label>Carregar Logo (JPG ou PNG):</label>
-                    <input type="file" accept="image/jpeg,image/png" onchange="handleLogoUpload(event, ${index})" style="padding: 8px; border: 2px dashed #667eea; border-radius: 8px; cursor: pointer;">
-                    <small style="color: #666; margin-top: 0.5rem; display: block;">Selecione uma imagem JPG ou PNG com a logo do fornecedor</small>
+                    <label>URL publica da logo:</label>
+                    <input type="text" value="${supplier.logo || ''}" placeholder="https://... ou /images/logo.png" onchange="updateSupplierLogo(${index}, this)">
+                    <small style="color: #666; margin-top: 0.5rem; display: block;">A logo precisa estar em URL publica acessivel por qualquer maquina.</small>
                 </div>
                 <div class="btn-group">
                     <button class="btn btn-primary" onclick="saveSupplier(${index})">
                         <i class="fas fa-save"></i> Salvar
                     </button>
-                    ${supplier.logo && supplier.logo.startsWith('data:') ? `
+                    ${supplier.logo ? `
                     <button class="btn btn-danger" onclick="clearSupplierLogo(${index})">
                         <i class="fas fa-times"></i> Limpar Logo
                     </button>
@@ -988,7 +1059,8 @@
                     // Garantir que trends antigos tenham o campo percentage
                     return parsed.map(trend => ({
                         ...trend,
-                        percentage: trend.percentage !== undefined ? trend.percentage : 0
+                        percentage: trend.percentage !== undefined ? trend.percentage : 0,
+                        flyer: normalizeImageUrl(trend.flyer)
                     }));
                 }
             } catch (error) {
@@ -1022,8 +1094,8 @@
                     ${flyerPreview}
                 </div>
                 <div class="control-group">
-                    <label>Carregar Flyer (JPG/PNG):</label>
-                    <input type="file" accept="image/jpeg,image/png" onchange="handleFlyerUpload(event, ${index})" style="padding: 8px; border: 2px dashed #667eea; border-radius: 8px; cursor: pointer;">
+                    <label>URL publica do flyer:</label>
+                    <input type="text" value="${trend.flyer || ''}" placeholder="https://... ou /images/flyer.jpg" onchange="updateTrendFlyer(${index}, this)">
                 </div>
                 <div class="control-group">
                     <label>Percentual de preferência (%): <span id="percent-${index}">${trend.percentage || 0}</span>%</label>
@@ -1054,18 +1126,18 @@
             loadTrends();
         }
 
-        function handleFlyerUpload(event, index) {
-            const file = event.target.files[0];
-            if (!file) {
+        function updateTrendFlyer(index, input) {
+            const normalized = normalizeImageUrl(input.value);
+            if (!normalized && input.value.trim()) {
+                alert('Use uma URL publica (https://) ou caminho em /images/.');
+                input.value = trends[index]?.flyer || '';
                 return;
             }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                trends[index].flyer = e.target.result;
+            if (trends[index]) {
+                trends[index].flyer = normalized;
+                persistTrends();
                 loadTrends();
-            };
-            reader.readAsDataURL(file);
+            }
         }
 
         function clearFlyerTrend(index) {
@@ -1079,18 +1151,18 @@
             loadTrends();
         }
 
-        function handleLogoUpload(event, index) {
-            const file = event.target.files[0];
-            if (!file) {
+        function updateSupplierLogo(index, input) {
+            const normalized = normalizeImageUrl(input.value);
+            if (!normalized && input.value.trim()) {
+                alert('Use uma URL publica (https://) ou caminho em /images/.');
+                input.value = suppliers[index]?.logo || '';
                 return;
             }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                suppliers[index].logo = e.target.result;
+            if (suppliers[index]) {
+                suppliers[index].logo = normalized;
+                persistSuppliers();
                 loadSuppliers();
-            };
-            reader.readAsDataURL(file);
+            }
         }
 
         function clearSupplierLogo(index) {
