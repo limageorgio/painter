@@ -90,6 +90,8 @@ npm run dev
 ```
 Depois acesse: `http://localhost:3000`
 
+> Observacao: uploads nao funcionam no admin hospedado em HTTPS (ex: GitHub Pages) porque o navegador bloqueia envio para http://localhost. Use o admin local ou um backend HTTPS.
+
 ### Opção 4: Usar um Servidor
 1. Instale um servidor local (XAMPP, Wamp ou Vercel)
 2. Copie os arquivos para a pasta do servidor

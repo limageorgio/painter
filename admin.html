@@ -559,6 +559,7 @@
                     </button>
                 </div>
                 <small style="color: #666; margin-top: 0.5rem; display: block;">Use apenas URLs publicas (https://) ou caminhos servidos pela pasta /images/ do site.</small>
+                <small style="color: #c0392b; margin-top: 0.35rem; display: block;">Uploads so funcionam quando o admin roda em http://localhost:3000/admin.html (HTTPS bloqueia envio para localhost).</small>
             </div>
 
             <div class="images-grid" id="imagesGrid">
@@ -710,6 +711,9 @@
 
         async function uploadImageFile(file) {
             const endpoint = getUploadEndpoint();
+            if (window.location.protocol === 'https:' && endpoint.startsWith('http://')) {
+                throw new Error('Upload bloqueado pelo navegador. Abra o admin em http://localhost:3000/admin.html ou use um servidor HTTPS.');
+            }
             const formData = new FormData();
             formData.append('image', file);
 
