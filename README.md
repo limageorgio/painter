@@ -82,7 +82,15 @@ python -m http.server 8000
 ```
 Depois acesse: `http://localhost:8000`
 
-### Opção 3: Usar um Servidor
+### Opção 3: Servidor com Upload (Recomendado para o Admin)
+Para habilitar upload de imagens no painel admin:
+```bash
+npm install
+npm run dev
+```
+Depois acesse: `http://localhost:3000`
+
+### Opção 4: Usar um Servidor
 1. Instale um servidor local (XAMPP, Wamp ou Vercel)
 2. Copie os arquivos para a pasta do servidor
 3. Acesse via endereço local

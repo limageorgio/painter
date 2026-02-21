@@ -550,6 +550,7 @@
                 <div class="add-form">
                     <input type="text" id="newImageName" placeholder="Nome da imagem">
                     <input type="text" id="newImageUrl" placeholder="URL publica ou /images/nova.jpg">
+                    <input type="file" id="newImageUpload" accept="image/jpeg,image/png,image/webp" onchange="uploadNewImage(event)" style="padding: 8px; border: 2px dashed #667eea; border-radius: 8px; cursor: pointer;">
                     <button class="btn btn-primary" type="button" onclick="addImage()">
                         <i class="fas fa-plus"></i> Incluir imagem
                     </button>
@@ -748,6 +749,10 @@
                         <input type="text" value="${buildImageSrc(img)}" placeholder="https://... ou /images/arquivo.jpg" onchange="updateImageUrl(${index}, this)">
                     </div>
                     <div class="control-group">
+                        <label>Upload da imagem (JPG/PNG/WebP):</label>
+                        <input type="file" accept="image/jpeg,image/png,image/webp" onchange="uploadImageForIndex(event, ${index})" style="padding: 8px; border: 2px dashed #667eea; border-radius: 8px; cursor: pointer;">
+                    </div>
+                    <div class="control-group">
                         <label>Brilho:</label>
                         <input type="range" min="0" max="200" value="100" id="brightness-${index}" oninput="updateFilters(${index})">
                         <span class="control-value" id="brightness-value-${index}">100%</span>
@@ -851,6 +856,81 @@
             if (preview) {
                 preview.src = normalized;
             }
+        }
+
+        function uploadImageForIndex(event, index) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Falha no upload da imagem.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data?.url || !siteImages[index]) {
+                        throw new Error('Resposta invalida do servidor.');
+                    }
+                    siteImages[index].src = data.url;
+                    siteImages[index].file = getFilenameFromUrl(data.url) || siteImages[index].file || 'imagem.jpg';
+                    siteImages[index].path = '';
+                    persistImages();
+                    loadImages();
+                    showSuccess();
+                })
+                .catch(error => {
+                    alert(error.message || 'Erro ao enviar a imagem.');
+                })
+                .finally(() => {
+                    event.target.value = '';
+                });
+        }
+
+        function uploadNewImage(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Falha no upload da imagem.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data?.url) {
+                        throw new Error('Resposta invalida do servidor.');
+                    }
+                    const urlInput = document.getElementById('newImageUrl');
+                    if (urlInput) {
+                        urlInput.value = data.url;
+                    }
+                    showSuccess();
+                })
+                .catch(error => {
+                    alert(error.message || 'Erro ao enviar a imagem.');
+                })
+                .finally(() => {
+                    event.target.value = '';
+                });
         }
 
         // Update Filters
@@ -1012,6 +1092,10 @@
                     <input type="text" value="${supplier.logo || ''}" placeholder="https://... ou /images/logo.png" onchange="updateSupplierLogo(${index}, this)">
                     <small style="color: #666; margin-top: 0.5rem; display: block;">A logo precisa estar em URL publica acessivel por qualquer maquina.</small>
                 </div>
+                <div class="control-group">
+                    <label>Upload da logo (JPG/PNG/WebP):</label>
+                    <input type="file" accept="image/jpeg,image/png,image/webp" onchange="uploadSupplierLogo(event, ${index})" style="padding: 8px; border: 2px dashed #667eea; border-radius: 8px; cursor: pointer;">
+                </div>
                 <div class="btn-group">
                     <button class="btn btn-primary" onclick="saveSupplier(${index})">
                         <i class="fas fa-save"></i> Salvar
@@ -1098,6 +1182,11 @@
                     <input type="text" value="${trend.flyer || ''}" placeholder="https://... ou /images/flyer.jpg" onchange="updateTrendFlyer(${index}, this)">
                 </div>
                 <div class="control-group">
+                    <label>Upload de flyer (JPG/PNG/WebP):</label>
+                    <input type="file" accept="image/jpeg,image/png,image/webp" onchange="uploadTrendFlyer(event, ${index})" style="padding: 8px; border: 2px dashed #667eea; border-radius: 8px; cursor: pointer;">
+                    <small style="color: #666; margin-top: 0.5rem; display: block;">O upload salva o arquivo na pasta /images do servidor.</small>
+                </div>
+                <div class="control-group">
                     <label>Percentual de preferência (%): <span id="percent-${index}">${trend.percentage || 0}</span>%</label>
                     <input type="range" min="0" max="100" value="${trend.percentage || 0}" onchange="updateTrendPercentage(${index}, this.value); document.getElementById('percent-${index}').textContent = this.value;" style="width: 100%;">
                     <small style="color: #666;">Indicador visual de tendência para a página</small>
@@ -1140,6 +1229,42 @@
             }
         }
 
+        function uploadTrendFlyer(event, index) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Falha no upload do flyer.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data?.url || !trends[index]) {
+                        throw new Error('Resposta invalida do servidor.');
+                    }
+                    trends[index].flyer = data.url;
+                    persistTrends();
+                    loadTrends();
+                    showSuccess();
+                })
+                .catch(error => {
+                    alert(error.message || 'Erro ao enviar o flyer.');
+                })
+                .finally(() => {
+                    event.target.value = '';
+                });
+        }
+
         function clearFlyerTrend(index) {
             const confirmClear = confirm(`Limpar flyer do ${trends[index].supplierName}?`);
             if (!confirmClear) {
@@ -1163,6 +1288,42 @@
                 persistSuppliers();
                 loadSuppliers();
             }
+        }
+
+        function uploadSupplierLogo(event, index) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Falha no upload da logo.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data?.url || !suppliers[index]) {
+                        throw new Error('Resposta invalida do servidor.');
+                    }
+                    suppliers[index].logo = data.url;
+                    persistSuppliers();
+                    loadSuppliers();
+                    showSuccess();
+                })
+                .catch(error => {
+                    alert(error.message || 'Erro ao enviar a logo.');
+                })
+                .finally(() => {
+                    event.target.value = '';
+                });
         }
 
         function clearSupplierLogo(index) {
