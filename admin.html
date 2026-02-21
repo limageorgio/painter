@@ -614,6 +614,7 @@
         ];
 
         const PUBLIC_IMAGE_PREFIXES = ['https://', 'http://', '/images/', './images/', 'images/'];
+        const DEFAULT_UPLOAD_ENDPOINT = 'http://localhost:3000/api/upload';
 
         let siteImages = loadStoredImages();
 
@@ -692,6 +693,44 @@
 
         function persistImages() {
             localStorage.setItem('adminImages', JSON.stringify(siteImages));
+        }
+
+        function getUploadEndpoint() {
+            if (window.location.protocol === 'file:') {
+                return DEFAULT_UPLOAD_ENDPOINT;
+            }
+            const host = window.location.hostname || '';
+            const port = window.location.port || '';
+            if ((host === 'localhost' || host === '127.0.0.1') && port && port !== '3000') {
+                return DEFAULT_UPLOAD_ENDPOINT;
+            }
+            const origin = window.location.origin || '';
+            return origin ? `${origin}/api/upload` : DEFAULT_UPLOAD_ENDPOINT;
+        }
+
+        async function uploadImageFile(file) {
+            const endpoint = getUploadEndpoint();
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                body: formData
+            });
+
+            const contentType = response.headers.get('content-type') || '';
+            const payload = contentType.includes('application/json') ? await response.json() : null;
+
+            if (!response.ok) {
+                const message = payload?.error || 'Falha no upload. Verifique se o servidor esta ativo.';
+                throw new Error(message);
+            }
+
+            if (!payload?.url) {
+                throw new Error('Resposta invalida do servidor.');
+            }
+
+            return payload.url;
         }
 
         // Login
@@ -864,25 +903,13 @@
                 return;
             }
 
-            const formData = new FormData();
-            formData.append('image', file);
-
-            fetch('/api/upload', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Falha no upload da imagem.');
+            uploadImageFile(file)
+                .then(url => {
+                    if (!siteImages[index]) {
+                        throw new Error('Imagem nao encontrada.');
                     }
-                    return response.json();
-                })
-                .then(data => {
-                    if (!data?.url || !siteImages[index]) {
-                        throw new Error('Resposta invalida do servidor.');
-                    }
-                    siteImages[index].src = data.url;
-                    siteImages[index].file = getFilenameFromUrl(data.url) || siteImages[index].file || 'imagem.jpg';
+                    siteImages[index].src = url;
+                    siteImages[index].file = getFilenameFromUrl(url) || siteImages[index].file || 'imagem.jpg';
                     siteImages[index].path = '';
                     persistImages();
                     loadImages();
@@ -902,26 +929,11 @@
                 return;
             }
 
-            const formData = new FormData();
-            formData.append('image', file);
-
-            fetch('/api/upload', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Falha no upload da imagem.');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (!data?.url) {
-                        throw new Error('Resposta invalida do servidor.');
-                    }
+            uploadImageFile(file)
+                .then(url => {
                     const urlInput = document.getElementById('newImageUrl');
                     if (urlInput) {
-                        urlInput.value = data.url;
+                        urlInput.value = url;
                     }
                     showSuccess();
                 })
@@ -1235,24 +1247,12 @@
                 return;
             }
 
-            const formData = new FormData();
-            formData.append('image', file);
-
-            fetch('/api/upload', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Falha no upload do flyer.');
+            uploadImageFile(file)
+                .then(url => {
+                    if (!trends[index]) {
+                        throw new Error('Trend nao encontrada.');
                     }
-                    return response.json();
-                })
-                .then(data => {
-                    if (!data?.url || !trends[index]) {
-                        throw new Error('Resposta invalida do servidor.');
-                    }
-                    trends[index].flyer = data.url;
+                    trends[index].flyer = url;
                     persistTrends();
                     loadTrends();
                     showSuccess();
@@ -1296,24 +1296,12 @@
                 return;
             }
 
-            const formData = new FormData();
-            formData.append('image', file);
-
-            fetch('/api/upload', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Falha no upload da logo.');
+            uploadImageFile(file)
+                .then(url => {
+                    if (!suppliers[index]) {
+                        throw new Error('Fornecedor nao encontrado.');
                     }
-                    return response.json();
-                })
-                .then(data => {
-                    if (!data?.url || !suppliers[index]) {
-                        throw new Error('Resposta invalida do servidor.');
-                    }
-                    suppliers[index].logo = data.url;
+                    suppliers[index].logo = url;
                     persistSuppliers();
                     loadSuppliers();
                     showSuccess();

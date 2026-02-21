@@ -37,7 +37,18 @@ const upload = multer({
     }
 });
 
+app.use((_req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
+
 app.use(express.static(__dirname));
+
+app.options('/api/upload', (_req, res) => {
+    res.sendStatus(204);
+});
 
 app.post('/api/upload', upload.single('image'), (req, res) => {
     if (!req.file) {
